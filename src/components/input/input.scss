@@ -11,6 +11,22 @@
   box-sizing: border-box;
 }
 
+/* Wrapper establishes local positioning so trailing controls align to the actual input element. */
+.common-input__control-wrapper {
+  position: relative;
+}
+
+/* Trailing slot is vertically centered to keep actions like eye buttons visually aligned. */
+.common-input__trailing {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
 /* Helper copy is intentionally subtle to avoid competing with validation states. */
 .common-input__helper {
   margin: 0;

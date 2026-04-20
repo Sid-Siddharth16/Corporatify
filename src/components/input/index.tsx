@@ -1,4 +1,4 @@
-import type { InputHTMLAttributes } from 'react';
+import type { InputHTMLAttributes, ReactNode } from 'react';
 import './input.scss';
 
 type CommonInputProps = InputHTMLAttributes<HTMLInputElement> & {
@@ -6,10 +6,12 @@ type CommonInputProps = InputHTMLAttributes<HTMLInputElement> & {
   errorMessage?: string;
   helperText?: string;
   wrapperClassName?: string;
+  controlWrapperClassName?: string;
   labelClassName?: string;
   inputClassName?: string;
   helperClassName?: string;
   errorClassName?: string;
+  trailingContent?: ReactNode;
 };
 
 /**
@@ -24,10 +26,12 @@ function Input({
   helperText,
   className,
   wrapperClassName = '',
+  controlWrapperClassName = '',
   labelClassName = '',
   inputClassName = '',
   helperClassName = '',
   errorClassName = '',
+  trailingContent,
   ...inputProps
 }: CommonInputProps) {
   // Reuses explicit id when provided and falls back to name for proper label/input association.
@@ -44,13 +48,18 @@ function Input({
           {label}
         </label>
       ) : null}
-      <input
-        id={inputId}
-        aria-invalid={Boolean(errorMessage)}
-        aria-describedby={describedBy}
-        className={`common-input__control ${inputClassName} ${className ?? ''}`.trim()}
-        {...inputProps}
-      />
+      {/* Wrapper anchors optional trailing controls to the input itself, improving layout precision. */}
+      <div className={`common-input__control-wrapper ${controlWrapperClassName}`.trim()}>
+        <input
+          id={inputId}
+          aria-invalid={Boolean(errorMessage)}
+          aria-describedby={describedBy}
+          className={`common-input__control ${inputClassName} ${className ?? ''}`.trim()}
+          {...inputProps}
+        />
+        {/* Slot allows context-specific UI like password visibility toggles without duplicating input logic. */}
+        {trailingContent ? <div className="common-input__trailing">{trailingContent}</div> : null}
+      </div>
       {helperText ? (
         <p id={helperId} className={`common-input__helper ${helperClassName}`.trim()}>
           {helperText}

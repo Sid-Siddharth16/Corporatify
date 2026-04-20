@@ -1,22 +1,1513 @@
-/* Centers the full login shell and applies a soft neutral background behind the two-panel card. */
+/* Full-page shell keeps focus on the authentication card. */
+.login-page {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: #050505;
+}
+
+/* Card layout balances form area and visual banner. */
+.login-layout {
+  width: min(100%, 1120px);
+  min-height: 680px;
+  display: grid;
+  grid-template-columns: minmax(370px, 1fr) minmax(340px, 0.95fr);
+  overflow: hidden;
+  border: 1px solid rgba(255, 74, 74, 0.28);
+  background: #141414;
+  box-shadow:
+    0 0 0 1px rgba(255, 61, 61, 0.18),
+    0 22px 58px rgba(255, 0, 0, 0.26),
+    0 0 42px rgba(255, 0, 0, 0.18);
+}
+
+/* Left panel hosts all input controls. */
+.login-panel {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 8px;
+  padding: 34px 32px;
+  background: #171717;
+}
+
+/* Header groups branding and intro text. */
+.login-panel__header {
+  margin-bottom: 10px;
+}
+
+/* Logo remains present without overpowering the form. */
+.login-panel__brand-logo {
+  display: block;
+  width: min(100%, 200px);
+  height: auto;
+  object-fit: contain;
+  margin-bottom: 14px;
+}
+
+/* High-contrast title must stay readable over dark background. */
+.login-panel__title {
+  margin: 0;
+  font-size: clamp(1.8rem, 3vw, 2.25rem);
+  line-height: 1.15;
+  color: #f8f8f8;
+}
+
+/* Subtitle uses slightly muted contrast while staying visible. */
+.login-panel__subtitle {
+  margin: 8px 0 0;
+  font-size: 0.95rem;
+  color: #c1c1c1;
+}
+
+/* Vertical rhythm for form controls. */
+.login-form {
+  display: grid;
+  gap: 12px;
+}
+
+/* Force readable label color and practical size. */
+.login-form__label {
+  display: inline-block;
+  margin-bottom: 6px;
+  color: #f0f0f0;
+  font-size: 0.96rem;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+
+/* Inputs use dark surfaces with bright text for legibility. */
+.login-form__input {
+  width: 100%;
+  border: 1px solid #4a4a4a;
+  background: #0f0f0f;
+  color: #f7f7f7;
+  padding: 11px 12px;
+  font-size: 0.93rem;
+  line-height: 1.2;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Reserve icon space so password text never overlaps the eye button. */
+.login-form__input--with-toggle {
+  padding-right: 48px;
+}
+
+/* Placeholder stays visible but clearly secondary. */
+.login-form__input::placeholder {
+  color: #969696;
+}
+
+/* Focus ring provides obvious keyboard feedback. */
+.login-form__input:focus-visible {
+  outline: none;
+  border-color: #ff5454;
+  box-shadow: 0 0 0 3px rgba(255, 84, 84, 0.24);
+}
+
+/* Error state highlights invalid fields clearly. */
+.login-form__input--error {
+  border-color: #ff6a6a;
+  box-shadow: 0 0 0 2px rgba(255, 106, 106, 0.18);
+}
+
+/* Field-level validation text. */
+.login-form__error-message {
+  margin: 4px 0 0;
+  color: #ff8f8f;
+  font-size: 0.81rem;
+  line-height: 1.3;
+}
+
+/* Utility row for remember-me and helper text. */
+.login-form__row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Checkbox label stays readable on dark panel. */
+.login-form__checkbox {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #f1f1f1;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+/* Forces checkbox visibility on dark backgrounds across browsers. */
+.login-form__checkbox input[type='checkbox'] {
+  width: 14px;
+  height: 14px;
+  margin: 0;
+  accent-color: #ff5959;
+  background-color: #ffffff;
+  border: 1px solid #ffffff;
+  cursor: pointer;
+}
+
+/* Supplemental helper note. */
+.login-form__helper {
+  color: #d2d2d2;
+  font-size: 0.82rem;
+}
+
+/* Primary submit action in crimson palette. */
+.login-form__submit {
+  border: 0;
+  width: 100%;
+  padding: 11px 16px;
+  background: linear-gradient(135deg, #c51f1f, #ff4f4f);
+  color: #ffffff;
+  font-size: 0.96rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease, filter 0.2s ease, opacity 0.2s ease;
+}
+
+/* Hover feedback improves responsiveness feel. */
+.login-form__submit:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.06);
+}
+
+/* Disabled state for loading/invalid conditions. */
+.login-form__submit:disabled {
+  opacity: 0.62;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Eye button has larger hit area and stronger contrast. */
+.login-form__password-toggle {
+  width: 26px;
+  height: 26px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 4px;
+  padding: 0;
+  background: transparent;
+  color: #cfcfcf;
+  cursor: pointer;
+}
+
+/* Eye icon size increased so it is not tiny. */
+.login-form__password-toggle-icon {
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
+  display: block;
+}
+
+/* Eye icon becomes bright on interaction. */
+.login-form__password-toggle:hover,
+.login-form__password-toggle:focus-visible {
+  color: #ffffff;
+}
+
+/* Accessible focus ring for keyboard users. */
+.login-form__password-toggle:focus-visible {
+  outline: 2px solid #ff6363;
+  outline-offset: 2px;
+}
+
+/* Route-switch text under the form. */
+.login-form__switch {
+  margin: 14px 0 0;
+  color: #dddddd;
+  font-size: 0.91rem;
+}
+
+/* Signup link remains readable and visually distinct. */
+.login-form__switch a {
+  color: #ff8a8a;
+  text-decoration: none;
+}
+
+/* Link hover cue. */
+.login-form__switch a:hover {
+  text-decoration: underline;
+}
+
+/* Visual banner side for brand mood. */
+.login-banner {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 24px;
+  color: #fff;
+  background:
+    linear-gradient(180deg, rgba(18, 18, 18, 0.2), rgba(18, 18, 18, 0.78)),
+    url('https://images.unsplash.com/photo-1614283233556-f35b0c801ef1?auto=format&fit=crop&w=1300&q=80');
+  background-size: cover;
+  background-position: center;
+}
+
+/* Overlay preserves text readability over image hotspots. */
+.login-banner__overlay {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 26% 14%, rgba(255, 88, 88, 0.22), transparent 42%);
+}
+
+/* Banner heading remains prominent. */
+.login-banner__title {
+  position: relative;
+  margin: 0 0 0 auto;
+  font-size: clamp(1.8rem, 2.7vw, 2.35rem);
+  font-weight: 700;
+}
+
+/* Banner caption under heading. */
+.login-banner__text {
+  position: relative;
+  margin: 10px 0 0;
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 0.9rem;
+  line-height: 1.42;
+}
+
+/* Tablet adapts width while preserving split layout. */
+@media (max-width: 980px) {
+  .login-layout {
+    width: min(100%, 920px);
+    grid-template-columns: 1fr 0.9fr;
+  }
+}
+
+/* Mobile stacks sections for better narrow-screen UX. */
+@media (max-width: 840px) {
+  .login-page {
+    padding: 14px;
+  }
+
+  .login-layout {
+    grid-template-columns: 1fr;
+    min-height: auto;
+  }
+
+  .login-panel {
+    padding: 24px 18px;
+  }
+
+  .login-form__row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .login-banner {
+    min-height: 210px;
+  }
+}
+/* Full-page shell keeps focus on the authentication card. */
+.login-page {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: #050505;
+}
+
+/* Card layout balances form area and visual banner. */
+.login-layout {
+  width: min(100%, 1120px);
+  min-height: 680px;
+  display: grid;
+  grid-template-columns: minmax(370px, 1fr) minmax(340px, 0.95fr);
+  overflow: hidden;
+  border: 1px solid rgba(255, 74, 74, 0.28);
+  background: #141414;
+  box-shadow:
+    0 0 0 1px rgba(255, 61, 61, 0.18),
+    0 22px 58px rgba(255, 0, 0, 0.26),
+    0 0 42px rgba(255, 0, 0, 0.18);
+}
+
+/* Left panel hosts all input controls. */
+.login-panel {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 8px;
+  padding: 34px 32px;
+  background: #171717;
+}
+
+/* Header groups branding and intro text. */
+.login-panel__header {
+  margin-bottom: 10px;
+}
+
+/* Logo remains present without overpowering the form. */
+.login-panel__brand-logo {
+  display: block;
+  width: min(100%, 200px);
+  height: auto;
+  object-fit: contain;
+  margin-bottom: 14px;
+}
+
+/* High-contrast title must stay readable over dark background. */
+.login-panel__title {
+  margin: 0;
+  font-size: clamp(1.8rem, 3vw, 2.25rem);
+  line-height: 1.15;
+  color: #f8f8f8 !important;
+}
+
+/* Subtitle uses slightly muted contrast while staying visible. */
+.login-panel__subtitle {
+  margin: 8px 0 0;
+  font-size: 0.95rem;
+  color: #c1c1c1 !important;
+}
+
+/* Vertical rhythm for form controls. */
+.login-form {
+  display: grid;
+  gap: 12px;
+}
+
+/* Force readable label color and practical size. */
+.login-form__label {
+  display: inline-block;
+  margin-bottom: 6px;
+  color: #f0f0f0 !important;
+  font-size: 0.96rem !important;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+
+/* Inputs use dark surfaces with bright text for legibility. */
+.login-form__input {
+  width: 100%;
+  border: 1px solid #4a4a4a;
+  background: #0f0f0f;
+  color: #f7f7f7 !important;
+  padding: 11px 12px;
+  font-size: 0.93rem;
+  line-height: 1.2;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Reserve icon space so password text never overlaps the eye button. */
+.login-form__input--with-toggle {
+  padding-right: 48px;
+}
+
+/* Placeholder stays visible but clearly secondary. */
+.login-form__input::placeholder {
+  color: #969696;
+}
+
+/* Focus ring provides obvious keyboard feedback. */
+.login-form__input:focus-visible {
+  outline: none;
+  border-color: #ff5454;
+  box-shadow: 0 0 0 3px rgba(255, 84, 84, 0.24);
+}
+
+/* Error state highlights invalid fields clearly. */
+.login-form__input--error {
+  border-color: #ff6a6a;
+  box-shadow: 0 0 0 2px rgba(255, 106, 106, 0.18);
+}
+
+/* Field-level validation text. */
+.login-form__error-message {
+  margin: 4px 0 0;
+  color: #ff8f8f;
+  font-size: 0.81rem;
+  line-height: 1.3;
+}
+
+/* Utility row for remember-me and helper text. */
+.login-form__row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Checkbox label stays readable on dark panel. */
+.login-form__checkbox {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #f1f1f1 !important;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+/* Forces checkbox control visibility on dark backgrounds across browsers. */
+.login-form__checkbox input[type='checkbox'] {
+  width: 14px;
+  height: 14px;
+  margin: 0;
+  accent-color: #ff5959;
+  background-color: #ffffff;
+  border: 1px solid #ffffff;
+  cursor: pointer;
+}
+
+/* Supplemental helper note. */
+.login-form__helper {
+  color: #d2d2d2 !important;
+  font-size: 0.82rem;
+}
+
+/* Primary submit action in crimson palette. */
+.login-form__submit {
+  border: 0;
+  width: 100%;
+  padding: 11px 16px;
+  background: linear-gradient(135deg, #c51f1f, #ff4f4f);
+  color: #ffffff;
+  font-size: 0.96rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease, filter 0.2s ease, opacity 0.2s ease;
+}
+
+/* Hover feedback improves responsiveness feel. */
+.login-form__submit:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.06);
+}
+
+/* Disabled state for loading/invalid conditions. */
+.login-form__submit:disabled {
+  opacity: 0.62;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Eye button has larger hit area and stronger contrast. */
+.login-form__password-toggle {
+  width: 26px;
+  height: 26px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 4px;
+  padding: 0;
+  background: transparent;
+  color: #cfcfcf;
+  cursor: pointer;
+}
+
+/* Eye icon size increased so it is not tiny. */
+.login-form__password-toggle-icon {
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
+  display: block;
+}
+
+/* Eye icon becomes bright on interaction. */
+.login-form__password-toggle:hover,
+.login-form__password-toggle:focus-visible {
+  color: #ffffff;
+}
+
+/* Accessible focus ring for keyboard users. */
+.login-form__password-toggle:focus-visible {
+  outline: 2px solid #ff6363;
+  outline-offset: 2px;
+}
+
+/* Route-switch text under the form. */
+.login-form__switch {
+  margin: 14px 0 0;
+  color: #dddddd;
+  font-size: 0.91rem;
+}
+
+/* Signup link remains readable and visually distinct. */
+.login-form__switch a {
+  color: #ff8a8a;
+  text-decoration: none;
+}
+
+/* Link hover cue. */
+.login-form__switch a:hover {
+  text-decoration: underline;
+}
+
+/* Visual banner side for brand mood. */
+.login-banner {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 24px;
+  color: #fff;
+  background:
+    linear-gradient(180deg, rgba(18, 18, 18, 0.2), rgba(18, 18, 18, 0.78)),
+    url('https://images.unsplash.com/photo-1614283233556-f35b0c801ef1?auto=format&fit=crop&w=1300&q=80');
+  background-size: cover;
+  background-position: center;
+}
+
+/* Overlay preserves text readability over image hotspots. */
+.login-banner__overlay {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 26% 14%, rgba(255, 88, 88, 0.22), transparent 42%);
+}
+
+/* Banner heading remains prominent. */
+.login-banner__title {
+  position: relative;
+  margin: 0 0 0 auto;
+  font-size: clamp(1.8rem, 2.7vw, 2.35rem);
+  font-weight: 700;
+}
+
+/* Banner caption under heading. */
+.login-banner__text {
+  position: relative;
+  margin: 10px 0 0;
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 0.9rem;
+  line-height: 1.42;
+}
+
+/* Tablet adapts width while preserving split layout. */
+@media (max-width: 980px) {
+  .login-layout {
+    width: min(100%, 920px);
+    grid-template-columns: 1fr 0.9fr;
+  }
+}
+
+/* Mobile stacks sections for better narrow-screen UX. */
+@media (max-width: 840px) {
+  .login-page {
+    padding: 14px;
+  }
+
+  .login-layout {
+    grid-template-columns: 1fr;
+    min-height: auto;
+  }
+
+  .login-panel {
+    padding: 24px 18px;
+  }
+
+  .login-form__row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .login-banner {
+    min-height: 210px;
+  }
+}
+/* Full-page shell keeps focus on the authentication card. */
+.login-page {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: #050505;
+}
+
+/* Card layout balances form area and visual banner. */
+.login-layout {
+  width: min(100%, 1120px);
+  min-height: 680px;
+  display: grid;
+  grid-template-columns: minmax(370px, 1fr) minmax(340px, 0.95fr);
+  overflow: hidden;
+  border: 1px solid rgba(255, 74, 74, 0.28);
+  background: #141414;
+  box-shadow:
+    0 0 0 1px rgba(255, 61, 61, 0.18),
+    0 22px 58px rgba(255, 0, 0, 0.26),
+    0 0 42px rgba(255, 0, 0, 0.18);
+}
+
+/* Left panel hosts all input controls. */
+.login-panel {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 8px;
+  padding: 34px 32px;
+  background: #171717;
+}
+
+/* Header groups branding and intro text. */
+.login-panel__header {
+  margin-bottom: 10px;
+}
+
+/* Logo remains present without overpowering the form. */
+.login-panel__brand-logo {
+  display: block;
+  width: min(100%, 200px);
+  height: auto;
+  object-fit: contain;
+  margin-bottom: 14px;
+}
+
+/* High-contrast title must stay readable over dark background. */
+.login-panel__title {
+  margin: 0;
+  font-size: clamp(1.8rem, 3vw, 2.25rem);
+  line-height: 1.15;
+  color: #f8f8f8 !important;
+}
+
+/* Subtitle uses slightly muted contrast while staying visible. */
+.login-panel__subtitle {
+  margin: 8px 0 0;
+  font-size: 0.95rem;
+  color: #c1c1c1 !important;
+}
+
+/* Vertical rhythm for form controls. */
+.login-form {
+  display: grid;
+  gap: 12px;
+}
+
+/* Force readable label color and practical size. */
+.login-form__label {
+  display: inline-block;
+  margin-bottom: 6px;
+  color: #f0f0f0 !important;
+  font-size: 0.96rem !important;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+
+/* Inputs use dark surfaces with bright text for legibility. */
+.login-form__input {
+  width: 100%;
+  border: 1px solid #4a4a4a;
+  background: #0f0f0f;
+  color: #f7f7f7 !important;
+  padding: 11px 12px;
+  font-size: 0.93rem;
+  line-height: 1.2;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Reserve icon space so password text never overlaps the eye button. */
+.login-form__input--with-toggle {
+  padding-right: 48px;
+}
+
+/* Placeholder stays visible but clearly secondary. */
+.login-form__input::placeholder {
+  color: #969696;
+}
+
+/* Focus ring provides obvious keyboard feedback. */
+.login-form__input:focus-visible {
+  outline: none;
+  border-color: #ff5454;
+  box-shadow: 0 0 0 3px rgba(255, 84, 84, 0.24);
+}
+
+/* Error state highlights invalid fields clearly. */
+.login-form__input--error {
+  border-color: #ff6a6a;
+  box-shadow: 0 0 0 2px rgba(255, 106, 106, 0.18);
+}
+
+/* Field-level validation text. */
+.login-form__error-message {
+  margin: 4px 0 0;
+  color: #ff8f8f;
+  font-size: 0.81rem;
+  line-height: 1.3;
+}
+
+/* Utility row for remember-me and helper text. */
+.login-form__row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Checkbox label stays readable on dark panel. */
+.login-form__checkbox {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: #d7d7d7;
+  font-size: 0.89rem;
+}
+
+/* Supplemental helper note. */
+.login-form__helper {
+  color: #a8a8a8;
+  font-size: 0.8rem;
+}
+
+/* Primary submit action in crimson palette. */
+.login-form__submit {
+  border: 0;
+  width: 100%;
+  padding: 11px 16px;
+  background: linear-gradient(135deg, #c51f1f, #ff4f4f);
+  color: #ffffff;
+  font-size: 0.96rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease, filter 0.2s ease, opacity 0.2s ease;
+}
+
+/* Hover feedback improves responsiveness feel. */
+.login-form__submit:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.06);
+}
+
+/* Disabled state for loading/invalid conditions. */
+.login-form__submit:disabled {
+  opacity: 0.62;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Eye button has larger hit area and stronger contrast. */
+.login-form__password-toggle {
+  width: 26px;
+  height: 26px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 4px;
+  padding: 0;
+  background: transparent;
+  color: #cfcfcf;
+  cursor: pointer;
+}
+
+/* Eye icon size increased so it is not tiny. */
+.login-form__password-toggle-icon {
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
+  display: block;
+}
+
+/* Eye icon becomes bright on interaction. */
+.login-form__password-toggle:hover,
+.login-form__password-toggle:focus-visible {
+  color: #ffffff;
+}
+
+/* Accessible focus ring for keyboard users. */
+.login-form__password-toggle:focus-visible {
+  outline: 2px solid #ff6363;
+  outline-offset: 2px;
+}
+
+/* Route-switch text under the form. */
+.login-form__switch {
+  margin: 14px 0 0;
+  color: #b9b9b9;
+  font-size: 0.91rem;
+}
+
+/* Signup link remains readable and visually distinct. */
+.login-form__switch a {
+  color: #ff8a8a;
+  text-decoration: none;
+}
+
+/* Link hover cue. */
+.login-form__switch a:hover {
+  text-decoration: underline;
+}
+
+/* Visual banner side for brand mood. */
+.login-banner {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 24px;
+  color: #fff;
+  background:
+    linear-gradient(180deg, rgba(18, 18, 18, 0.2), rgba(18, 18, 18, 0.78)),
+    url('https://images.unsplash.com/photo-1614283233556-f35b0c801ef1?auto=format&fit=crop&w=1300&q=80');
+  background-size: cover;
+  background-position: center;
+}
+
+/* Overlay preserves text readability over image hotspots. */
+.login-banner__overlay {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 26% 14%, rgba(255, 88, 88, 0.22), transparent 42%);
+}
+
+/* Banner heading remains prominent. */
+.login-banner__title {
+  position: relative;
+  margin: 0 0 0 auto;
+  font-size: clamp(1.8rem, 2.7vw, 2.35rem);
+  font-weight: 700;
+}
+
+/* Banner caption under heading. */
+.login-banner__text {
+  position: relative;
+  margin: 10px 0 0;
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 0.9rem;
+  line-height: 1.42;
+}
+
+/* Tablet adapts width while preserving split layout. */
+@media (max-width: 980px) {
+  .login-layout {
+    width: min(100%, 920px);
+    grid-template-columns: 1fr 0.9fr;
+  }
+}
+
+/* Mobile stacks sections for better narrow-screen UX. */
+@media (max-width: 840px) {
+  .login-page {
+    padding: 14px;
+  }
+
+  .login-layout {
+    grid-template-columns: 1fr;
+    min-height: auto;
+  }
+
+  .login-panel {
+    padding: 24px 18px;
+  }
+
+  .login-form__row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .login-banner {
+    min-height: 210px;
+  }
+}
+/* Full-page shell uses a pure dark backdrop so the auth card remains the visual focal point. */
+.login-page {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: #050505;
+}
+
+/* Main card keeps a balanced split layout and a controlled crimson glow. */
+.login-layout {
+  width: min(100%, 1120px);
+  min-height: 680px;
+  display: grid;
+  grid-template-columns: minmax(370px, 1fr) minmax(340px, 0.95fr);
+  overflow: hidden;
+  border: 1px solid rgba(255, 74, 74, 0.28);
+  background: #141414;
+  box-shadow:
+    0 0 0 1px rgba(255, 61, 61, 0.18),
+    0 22px 58px rgba(255, 0, 0, 0.26),
+    0 0 42px rgba(255, 0, 0, 0.18);
+}
+
+/* Left panel hosts all form controls and keeps reading contrast high. */
+.login-panel {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 8px;
+  padding: 34px 32px;
+  background: #171717;
+}
+
+/* Header groups brand and title so users can identify context quickly. */
+.login-panel__header {
+  margin-bottom: 10px;
+}
+
+/* Logo is constrained to avoid overwhelming the form and shrinking text area. */
+.login-panel__brand-logo {
+  display: block;
+  width: min(100%, 200px);
+  height: auto;
+  object-fit: contain;
+  margin-bottom: 14px;
+}
+
+/* Main title uses strong contrast and controlled size for immediate readability. */
+.login-panel__title {
+  margin: 0;
+  font-size: clamp(1.8rem, 3vw, 2.25rem);
+  line-height: 1.15;
+  color: #f8f8f8;
+}
+
+/* Subtitle uses softer contrast while staying clearly readable on dark surfaces. */
+.login-panel__subtitle {
+  margin: 8px 0 0;
+  font-size: 0.95rem;
+  color: #bdbdbd;
+}
+
+/* Form stack spacing keeps controls separated without excessive vertical stretch. */
+.login-form {
+  display: grid;
+  gap: 12px;
+}
+
+/* Labels stay legible and compact so they do not dominate the layout. */
+.login-form__label {
+  display: inline-block;
+  margin-bottom: 6px;
+  color: #f0f0f0;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+/* Input style provides high-contrast text and crisp field boundaries on dark UI. */
+.login-form__input {
+  width: 100%;
+  border: 1px solid #4a4a4a;
+  background: #0f0f0f;
+  color: #f7f7f7;
+  padding: 11px 12px;
+  font-size: 0.93rem;
+  line-height: 1.2;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Right padding reserves room for the eye button so text never collides with the icon. */
+.login-form__input--with-toggle {
+  padding-right: 48px;
+}
+
+/* Placeholder color remains visible but secondary to typed content. */
+.login-form__input::placeholder {
+  color: #8f8f8f;
+}
+
+/* Focus styles improve keyboard navigation visibility and maintain red accent consistency. */
+.login-form__input:focus-visible {
+  outline: none;
+  border-color: #ff5454;
+  box-shadow: 0 0 0 3px rgba(255, 84, 84, 0.24);
+}
+
+/* Error ring makes invalid states unmistakable while staying on-brand. */
+.login-form__input--error {
+  border-color: #ff6a6a;
+  box-shadow: 0 0 0 2px rgba(255, 106, 106, 0.18);
+}
+
+/* Error text sits close to fields so users can correct mistakes quickly. */
+.login-form__error-message {
+  margin: 4px 0 0;
+  color: #ff8f8f;
+  font-size: 0.81rem;
+  line-height: 1.3;
+}
+
+/* Utility row keeps remember-me and helper text aligned and readable. */
+.login-form__row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Checkbox and label remain readable with subtle spacing for click comfort. */
+.login-form__checkbox {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: #d7d7d7;
+  font-size: 0.89rem;
+}
+
+/* Supporting helper text clarifies local-only auth behavior. */
+.login-form__helper {
+  color: #a3a3a3;
+  font-size: 0.8rem;
+}
+
+/* Primary CTA uses stronger red gradient and high-contrast text for clarity. */
+.login-form__submit {
+  border: 0;
+  width: 100%;
+  padding: 11px 16px;
+  background: linear-gradient(135deg, #c51f1f, #ff4f4f);
+  color: #ffffff;
+  font-size: 0.96rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease, filter 0.2s ease, opacity 0.2s ease;
+}
+
+/* Hover response adds tactile feedback for desktop interactions. */
+.login-form__submit:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.06);
+}
+
+/* Disabled state prevents accidental repeat submissions and communicates loading lock. */
+.login-form__submit:disabled {
+  opacity: 0.62;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Eye toggle uses larger hit-area and brighter color to avoid tiny/invisible icon feel. */
+.login-form__password-toggle {
+  width: 26px;
+  height: 26px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 4px;
+  padding: 0;
+  background: transparent;
+  color: #c8c8c8;
+  cursor: pointer;
+}
+
+/* Icon size is increased so the eye is clearly visible inside dark inputs. */
+.login-form__password-toggle-icon {
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
+  display: block;
+}
+
+/* Hover/focus boosts contrast so icon state is instantly visible. */
+.login-form__password-toggle:hover,
+.login-form__password-toggle:focus-visible {
+  color: #ffffff;
+}
+
+/* Keyboard focus ring keeps toggle accessible and obvious. */
+.login-form__password-toggle:focus-visible {
+  outline: 2px solid #ff6363;
+  outline-offset: 2px;
+}
+
+/* Footer line provides clear navigation to signup without visual clutter. */
+.login-form__switch {
+  margin: 14px 0 0;
+  color: #b9b9b9;
+  font-size: 0.91rem;
+}
+
+/* Link color is tuned for readability on near-black background. */
+.login-form__switch a {
+  color: #ff8a8a;
+  text-decoration: none;
+}
+
+/* Hover underline reinforces expected link behavior. */
+.login-form__switch a:hover {
+  text-decoration: underline;
+}
+
+/* Right panel adds thematic visual support while preserving text contrast. */
+.login-banner {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 24px;
+  color: #fff;
+  background:
+    linear-gradient(180deg, rgba(18, 18, 18, 0.2), rgba(18, 18, 18, 0.78)),
+    url('https://images.unsplash.com/photo-1614283233556-f35b0c801ef1?auto=format&fit=crop&w=1300&q=80');
+  background-size: cover;
+  background-position: center;
+}
+
+/* Overlay ensures banner typography stays readable on bright image sections. */
+.login-banner__overlay {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 26% 14%, rgba(255, 88, 88, 0.22), transparent 42%);
+}
+
+/* Banner title stays bold and visible at the top-right focal point. */
+.login-banner__title {
+  position: relative;
+  margin: 0 0 0 auto;
+  font-size: clamp(1.8rem, 2.7vw, 2.35rem);
+  font-weight: 700;
+}
+
+/* Banner caption remains short and readable over the image base. */
+.login-banner__text {
+  position: relative;
+  margin: 10px 0 0;
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 0.9rem;
+  line-height: 1.42;
+}
+
+/* Tablet breakpoint preserves split layout while reducing overall card width. */
+@media (max-width: 980px) {
+  .login-layout {
+    width: min(100%, 920px);
+    grid-template-columns: 1fr 0.9fr;
+  }
+}
+
+/* Mobile breakpoint stacks panels so auth controls remain comfortable on smaller screens. */
+@media (max-width: 840px) {
+  .login-page {
+    padding: 14px;
+  }
+
+  .login-layout {
+    grid-template-columns: 1fr;
+    min-height: auto;
+  }
+
+  .login-panel {
+    padding: 24px 18px;
+  }
+
+  .login-form__row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .login-banner {
+    min-height: 210px;
+  }
+}
+/* Full-screen shell uses black backdrop to emphasize the auth card surface. */
+.login-page {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: #060606;
+}
+
+/* Main split card uses a red-tinted shadow to match the corporate-rage visual direction. */
+.login-layout {
+  width: min(100%, 1140px);
+  min-height: 680px;
+  display: grid;
+  grid-template-columns: minmax(360px, 1fr) minmax(340px, 0.9fr);
+  overflow: hidden;
+  border: 1px solid rgba(255, 70, 70, 0.24);
+  background: #131313;
+  box-shadow:
+    0 0 0 1px rgba(255, 46, 46, 0.18),
+    0 24px 64px rgba(255, 0, 0, 0.32),
+    0 0 52px rgba(255, 0, 0, 0.2);
+}
+
+/* Left section keeps form controls readable and focused. */
+.login-panel {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 36px 34px;
+  background: #171717;
+}
+
+/* Header groups logo and text hierarchy for quick context. */
+.login-panel__header {
+  margin-bottom: 18px;
+}
+
+/* Logo scales predictably to avoid pushing form controls down. */
+.login-panel__brand-logo {
+  width: min(100%, 270px);
+  height: auto;
+  object-fit: contain;
+  margin-bottom: 12px;
+}
+
+/* Page title uses bright contrast for first-read clarity. */
+.login-panel__title {
+  margin: 0;
+  font-size: clamp(1.7rem, 3vw, 2.2rem);
+  color: #f9f9f9;
+}
+
+/* Supporting text explains page purpose without visual noise. */
+.login-panel__subtitle {
+  margin: 7px 0 0;
+  color: #b5b5b5;
+  font-size: 0.95rem;
+}
+
+/* Form layout maintains clean spacing between all controls. */
+.login-form {
+  display: grid;
+  gap: 13px;
+}
+
+/* Field labels are compact but clearly visible on dark backgrounds. */
+.login-form__label {
+  color: #ececec;
+  margin-bottom: 6px;
+  display: inline-block;
+  font-size: 1rem;
+}
+
+/* Inputs use dark crimson-compatible styling for theme consistency. */
+.login-form__input {
+  width: 100%;
+  border: 1px solid #444;
+  background: #101010;
+  color: #f4f4f4;
+  padding: 11px 12px;
+  font-size: 0.94rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Extra right padding protects typed text from eye toggle overlap. */
+.login-form__input--with-toggle {
+  padding-right: 44px;
+}
+
+/* Focus state improves keyboard usability and keeps crimson identity visible. */
+.login-form__input:focus-visible {
+  outline: none;
+  border-color: #ff4a4a;
+  box-shadow: 0 0 0 3px rgba(255, 67, 67, 0.24);
+}
+
+/* Placeholder color stays muted to preserve hierarchy against typed text. */
+.login-form__input::placeholder {
+  color: #8a8a8a;
+}
+
+/* Error state highlights invalid fields immediately with high contrast. */
+.login-form__input--error {
+  border-color: #ff5d5d;
+  box-shadow: 0 0 0 2px rgba(255, 93, 93, 0.18);
+}
+
+/* Error text stays compact so form rhythm remains clean. */
+.login-form__error-message {
+  margin: 4px 0 0;
+  color: #ff8a8a;
+  font-size: 0.81rem;
+}
+
+/* Utility row aligns remember-me and helper context on one line. */
+.login-form__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+/* Checkbox treatment keeps readability while matching dark theme. */
+.login-form__checkbox {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: #d6d6d6;
+  font-size: 0.9rem;
+}
+
+/* Helper copy clarifies remember-me behavior for frontend auth simulation. */
+.login-form__helper {
+  color: #9f9f9f;
+  font-size: 0.8rem;
+}
+
+/* Primary action button uses crimson gradient and clear disabled state. */
+.login-form__submit {
+  border: 0;
+  padding: 11px 16px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #fff;
+  cursor: pointer;
+  background: linear-gradient(135deg, #cb1f1f, #ff4c4c);
+  transition: transform 0.2s ease, filter 0.2s ease, opacity 0.2s ease;
+}
+
+/* Hover motion adds tactile feedback for desktop users. */
+.login-form__submit:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.06);
+}
+
+/* Disabled button state prevents duplicate submissions while loading. */
+.login-form__submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Eye button is styled to blend with input chrome while staying discoverable. */
+.login-form__password-toggle {
+  width: 21px;
+  height: 21px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  background: transparent;
+  color: #a4a4a4;
+  cursor: pointer;
+}
+
+/* Eye icon inherits button color for easier hover/focus feedback. */
+.login-form__password-toggle-icon {
+  width: 18px;
+  height: 18px;
+  fill: currentColor;
+}
+
+/* Interaction states increase icon contrast when users target the control. */
+.login-form__password-toggle:hover,
+.login-form__password-toggle:focus-visible {
+  color: #ffffff;
+}
+
+/* Keyboard-only focus ring supports accessibility expectations. */
+.login-form__password-toggle:focus-visible {
+  outline: 2px solid #ff5a5a;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Footer text provides simple route switch to signup page. */
+.login-form__switch {
+  margin: 15px 0 0;
+  color: #b7b7b7;
+  font-size: 0.92rem;
+}
+
+/* Link styling stays vivid while preserving readability on dark background. */
+.login-form__switch a {
+  color: #ff7a7a;
+  text-decoration: none;
+}
+
+/* Link hover keeps navigation cues obvious and polished. */
+.login-form__switch a:hover {
+  text-decoration: underline;
+}
+
+/* Right banner adds thematic atmosphere and balances the card composition. */
+.login-banner {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 24px;
+  color: #fff;
+  background:
+    linear-gradient(180deg, rgba(20, 20, 20, 0.18), rgba(20, 20, 20, 0.72)),
+    url('https://images.unsplash.com/photo-1614283233556-f35b0c801ef1?auto=format&fit=crop&w=1300&q=80');
+  background-size: cover;
+  background-position: center;
+}
+
+/* Overlay adds extra contrast so banner text remains readable over image highlights. */
+.login-banner__overlay {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 30% 15%, rgba(255, 98, 98, 0.22), transparent 40%);
+}
+
+/* Banner title reinforces product vibe with a strong headline. */
+.login-banner__title {
+  position: relative;
+  margin: 0;
+  font-size: clamp(1.6rem, 2.7vw, 2.3rem);
+  font-weight: 700;
+}
+
+/* Banner subtitle keeps supporting copy concise and legible. */
+.login-banner__text {
+  position: relative;
+  margin: 10px 0 0;
+  font-size: 0.92rem;
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 1.45;
+}
+
+/* Tablet layout narrows panel dimensions while preserving hierarchy. */
+@media (max-width: 980px) {
+  .login-layout {
+    width: min(100%, 900px);
+    grid-template-columns: 1fr 0.85fr;
+  }
+}
+
+/* Mobile layout stacks form and banner for comfortable small-screen interaction. */
+@media (max-width: 820px) {
+  .login-page {
+    padding: 14px;
+  }
+
+  .login-layout {
+    grid-template-columns: 1fr;
+    min-height: auto;
+  }
+
+  .login-panel {
+    padding: 26px 18px;
+  }
+
+  .login-banner {
+    min-height: 200px;
+  }
+}
+/* Centers the full login shell and applies a black backdrop so the card stands out strongly. */
 .login-page {
   min-height: 100vh;
   display: grid;
   place-items: center;
   padding: 20px;
-  background: #ececec;
+  background: #000;
 }
 
-/* Creates the desktop-first split layout requested in the reference design. */
+/* Creates the desktop-first split layout and adds a red-tinted shadow for stronger visual emphasis. */
 .login-layout {
   width: min(100%, 1540px);
   min-height: 840px;
-  background: #fff;
+  background: #141414;
   display: grid;
   grid-template-columns: minmax(370px, 0.95fr) minmax(420px, 1.05fr);
   border-radius: 0;
   overflow: hidden;
-  box-shadow: 0 30px 70px rgba(33, 38, 55, 0.2);
+  box-shadow:
+    0 22px 60px rgba(255, 0, 0, 0.22),
+    0 22px 60px rgba(255, 0, 0, 0.22),
+    0 22px 60px rgba(255, 0, 0, 0.22),
+    0 22px 60px rgba(255, 0, 0, 0.22),
 }
 
 /* Left panel hosts all form controls and keeps spacing comfortable for readability. */
@@ -25,6 +1516,15 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
+}
+
+.login-form__row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  // margin-top: -2px;
+  margin-bottom: 22px;
 }
 
 /* Header groups the identity mark and heading copy similar to the provided mockup. */
@@ -42,9 +1542,10 @@
 .login-panel__brand-logo {
   display: block;
   width: 100%;
-  max-width: 360px;
+  // max-width: 360px;
   height: auto;
   object-fit: contain;
+  border-radius: 12px;
 }
 
 /* Main heading establishes clear hierarchy and mirrors the "Welcome back!" emphasis. */
@@ -89,6 +1590,45 @@
   color: #1f1f1f;
   background: #fff;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Extra right padding prevents typed text from overlapping the visibility toggle control. */
+.login-form__input--with-toggle {
+  padding-right: 44px;
+}
+
+/* Toggle button styling remains local to login while position is now handled by the shared input trailing slot. */
+.login-form__password-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: #6a6a6a;
+  cursor: pointer;
+}
+
+/* Icon inherits current text color so focus/hover states can update appearance consistently. */
+.login-form__password-toggle-icon {
+  width: 19px;
+  height: 19px;
+  fill: currentColor;
+}
+
+/* Hover and focus states improve discoverability and accessibility of the toggle action. */
+.login-form__password-toggle:hover,
+.login-form__password-toggle:focus-visible {
+  color: #1f1f1f;
+}
+
+/* Focus ring is added only for keyboard navigation to avoid noisy mouse interactions. */
+.login-form__password-toggle:focus-visible {
+  outline: 2px solid #9d9d9d;
+  outline-offset: 2px;
+  border-radius: 4px;
 }
 
 /* Visible focus feedback improves accessibility for keyboard users and low-vision users. */
@@ -161,7 +1701,8 @@
   padding: 0;
   font-size: 0.9rem;
   color: #161616;
-  text-decoration: none;
+  text-decoration: underline;
+  color: #4242a9;
   cursor: pointer;
 }
 
@@ -296,6 +1837,7 @@
 
 /* Tablet breakpoint reduces panel padding and keeps proportions balanced on medium screens. */
 @media (max-width: 1080px) {
+
   /* Rebalances panel widths before full stacking so tablet layout remains proportional. */
   .login-layout {
     width: min(100%, 940px);
@@ -363,6 +1905,7 @@
 }
 
 @media (max-width: 520px) {
+
   /* On very small phones, utility actions stack to avoid cramped interaction targets. */
   .login-page {
     padding: 10px;
@@ -386,4 +1929,37 @@
   .login-banner__text {
     display: none;
   }
+}
+
+/* Final override ensures password characters remain visible regardless of legacy duplicated blocks above. */
+.login-form__input[type='password'],
+.login-form__input[type='text'] {
+  color: #646161 !important;
+  -webkit-text-fill-color: #646161 !important;
+}
+
+.login-form__input[type='email'] {
+  color: #646161 !important;
+  -webkit-text-fill-color: #646161 !important;
+}
+
+/* Keeps password field background bright enough for dark text contrast in all browser states. */
+.login-form__input[type='password'] {
+  background-color: #ffffff !important;
+}
+
+/* Prevents browser autofill from making password text unreadable due to forced light text color. */
+.login-form__input[type='password']:-webkit-autofill,
+.login-form__input[type='password']:-webkit-autofill:hover,
+.login-form__input[type='password']:-webkit-autofill:focus {
+  -webkit-text-fill-color: #646161 !important;
+  box-shadow: 0 0 0 1000px #ffffff inset !important;
+}
+
+/* Prevents browser autofill from making password text unreadable due to forced light text color. */
+.login-form__input[type='email']:-webkit-autofill:-webkit-autofill,
+.login-form__input[type='email']:-webkit-autofill:hover:-webkit-autofill,
+.login-form__input[type='email']:-webkit-autofill:focus:-webkit-autofill {  
+  -webkit-text-fill-color: #646161 !important;
+  box-shadow: 0 0 0 1000px #ffffff inset !important;
 }

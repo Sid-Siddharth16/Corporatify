@@ -175,6 +175,13 @@
   color: var(--dashboard-text-strong);
 }
 
+/* Groups output actions into a responsive toolbar so utility buttons stay organized. */
+.dashboard-panel__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
 /* Main textarea style shared by input and output for consistent visual weight. */
 .dashboard-textarea {
   width: 100%;

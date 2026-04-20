@@ -1,49 +1,118 @@
-import { useLoginForm } from './helper';
+import { useMemo, useState, type ChangeEvent, type FormEvent } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import Input from '../../components/input';
-import './login.scss';
 import { corporatifyLogo } from '../../common/images';
+import { useAppDispatch } from '../../redux/hooks';
+import { loginUser } from './service/authService';
+import { login } from './slice';
+import type { LoginPayload } from './types';
+import './login.scss';
 
-type LoginPageProps = {
-  onGoogleLoginSuccess?: Parameters<typeof useLoginForm>[0]['onGoogleLoginSuccess'];
+type LoginErrors = {
+  email: string;
+  password: string;
 };
 
 /**
- * Renders the main authentication screen for sign-in.
- * @param onGoogleLoginSuccess Optional callback fired after a verified Google sign-in.
- * @returns A styled login page with email/password inputs and social actions.
+ * Validates login form fields and returns user-facing error messages.
+ * @param payload Controlled login form values.
+ * @returns Per-field validation messages.
  */
-function LoginPage({ onGoogleLoginSuccess }: LoginPageProps) {
-  // Logic is moved to a reusable hook so this component stays focused on structure and styling.
-  const {
-    formState,
-    formErrors,
-    shouldShowPasswordField,
-    isFormValid,
-    googleUser,
-    googleAuthError,
-    googleButtonContainerRef,
-    handleEmailChange,
-    handlePasswordChange,
-    handleRememberMeChange,
-    handleSubmit,
-  } = useLoginForm({ onGoogleLoginSuccess });
+const validateLogin = (payload: LoginPayload): LoginErrors => {
+  const nextErrors: LoginErrors = { email: '', password: '' };
+  const normalizedEmail = payload.email.trim();
+
+  if (!normalizedEmail) {
+    nextErrors.email = 'Email is required.';
+  } else if (!/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/.test(normalizedEmail)) {
+    nextErrors.email = 'Enter a valid email address.';
+  }
+
+  if (!payload.password) {
+    nextErrors.password = 'Password is required.';
+  } else if (payload.password.length < 8) {
+    nextErrors.password = 'Password must be at least 8 characters.';
+  }
+
+  return nextErrors;
+};
+
+/**
+ * Login screen for existing users with remember-me and password visibility toggle.
+ * @returns Full login page for frontend-only authentication flow.
+ */
+function LoginPage() {
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  // Stores controlled field values to provide instant validation and UX feedback.
+  const [formState, setFormState] = useState<LoginPayload>({
+    email: '',
+    password: '',
+    rememberMe: true,
+  });
+  // Stores field-level validation messages so users know exactly what to fix.
+  const [formErrors, setFormErrors] = useState<LoginErrors>({ email: '', password: '' });
+  // Controls eye button behavior so users can verify passwords before submit.
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+  // Shows loading feedback on submit button to prevent accidental double submissions.
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  /**
+   * Updates string form fields in a generic, reusable way.
+   * @param field Field name to update.
+   * @param value Next string value from input.
+   */
+  const updateTextField = (field: 'email' | 'password', value: string) => {
+    setFormState((previousState) => ({ ...previousState, [field]: value }));
+    // Clears stale error as soon as user edits the field again.
+    setFormErrors((previousErrors) => ({ ...previousErrors, [field]: '' }));
+  };
+
+  /**
+   * Handles login form submission and dispatches authenticated session into Redux.
+   * @param event Native form submit event.
+   */
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const nextErrors = validateLogin(formState);
+    setFormErrors(nextErrors);
+    if (nextErrors.email || nextErrors.password) {
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      // Small delay keeps loading state visible, making successful login feel intentional.
+      await new Promise((resolve) => window.setTimeout(resolve, 450));
+      const authenticatedUser = loginUser(formState);
+      dispatch(login(authenticatedUser));
+      toast.success(`Welcome back, ${authenticatedUser.name}!`);
+      navigate('/dashboard', { replace: true });
+    } catch (error) {
+      const readableError = error instanceof Error ? error.message : 'Unable to login right now.';
+      toast.error(readableError);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const isFormComplete = useMemo(
+    () => Boolean(formState.email.trim()) && Boolean(formState.password.trim()),
+    [formState.email, formState.password],
+  );
 
   return (
     <main className="login-page">
-      {/* Shell creates the requested two-panel structure: authentication on left, banner image on right. */}
-      <section className="login-layout" aria-label="Sign in to your account">
-        {/* Left panel keeps interactive controls grouped for clear keyboard and screen-reader flow. */}
+      <section className="login-layout" aria-label="Login panel and branding banner">
         <article className="login-panel">
           <header className="login-panel__header">
-            {/* Compact brand row mirrors the screenshot's minimal logo + name treatment. */}
-            <div className="login-panel__brand" aria-hidden="true">
-              {/* Uses the uploaded logo asset while constraining dimensions to keep the form balanced. */}
-              <img src={corporatifyLogo} alt="Corporatify Logo" className="login-panel__brand-logo" />
-            </div>
+
+            <h1 className="login-panel__title">Welcome Back</h1>
+            <p className="login-panel__subtitle">Log in to continue your corporate rage workflow.</p>
           </header>
 
           <form className="login-form" onSubmit={handleSubmit}>
-            {/* Shared Input component preserves consistency across forms and keeps logic in helper.ts. */}
             <Input
               id="email"
               name="email"
@@ -53,84 +122,71 @@ function LoginPage({ onGoogleLoginSuccess }: LoginPageProps) {
               inputClassName={`login-form__input ${formErrors.email ? 'login-form__input--error' : ''}`}
               errorClassName="login-form__error-message"
               value={formState.email}
-              onChange={handleEmailChange}
-              placeholder="Enter your email"
+              onChange={(event: ChangeEvent<HTMLInputElement>) => updateTextField('email', event.target.value)}
               autoComplete="email"
+              placeholder="you@corporate.com"
               errorMessage={formErrors.email}
               required
             />
 
-            {/* Password group appears only when email is valid, preserving the existing progressive UX logic. */}
-            <div className={`login-password-step ${shouldShowPasswordField ? 'login-password-step--visible' : ''}`}>
-              <Input
-                id="password"
-                name="password"
-                label="Password"
-                type="password"
-                labelClassName="login-form__label"
-                inputClassName={`login-form__input ${formErrors.password ? 'login-form__input--error' : ''}`}
-                errorClassName="login-form__error-message"
-                value={formState.password}
-                onChange={handlePasswordChange}
-                placeholder="••••••••"
-                autoComplete="current-password"
-                minLength={8}
-                errorMessage={formErrors.password}
-                required={shouldShowPasswordField}
-              />
-
-              <div className="login-form__row">
-                {/* Uses helper-controlled rememberMe state directly so checkbox value is no longer inverted. */}
-                <label className="login-form__checkbox">
-                  <input type="checkbox" checked={formState.rememberMe} onChange={handleRememberMeChange} />
-                  Remember me
-                </label>
-                <button type="button" className="login-form__link-button">
-                  Forgot Password
+            <Input
+              id="password"
+              name="password"
+              label="Password"
+              type={isPasswordVisible ? 'text' : 'password'}
+              labelClassName="login-form__label"
+              inputClassName={`login-form__input login-form__input--with-toggle ${formErrors.password ? 'login-form__input--error' : ''
+                }`}
+              errorClassName="login-form__error-message"
+              value={formState.password}
+              onChange={(event: ChangeEvent<HTMLInputElement>) => updateTextField('password', event.target.value)}
+              autoComplete="current-password"
+              placeholder="Enter your password"
+              errorMessage={formErrors.password}
+              required
+              trailingContent={
+                <button
+                  type="button"
+                  className="login-form__password-toggle"
+                  aria-label={isPasswordVisible ? 'Hide password' : 'Show password'}
+                  aria-pressed={isPasswordVisible}
+                  onClick={() => setIsPasswordVisible((previousVisibility) => !previousVisibility)}
+                >
+                  <svg className="login-form__password-toggle-icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M12 5c-5.3 0-9.6 3.6-11 7 1.4 3.4 5.7 7 11 7s9.6-3.6 11-7c-1.4-3.4-5.7-7-11-7Zm0 11.2A4.2 4.2 0 1 1 12 7.8a4.2 4.2 0 0 1 0 8.4Z" />
+                    <circle cx="12" cy="12" r="2.2" />
+                  </svg>
                 </button>
-              </div>
+              }
+            />
 
-              <button type="submit" className="login-form__submit" disabled={!isFormValid}>
-                Sign In
-              </button>
+            <div className="login-form__row">
+              <label className="login-form__checkbox">
+                <input
+                  type="checkbox"
+                  checked={formState.rememberMe}
+                  onChange={(event) =>
+                    setFormState((previousState) => ({ ...previousState, rememberMe: event.target.checked }))
+                  }
+                />
+                Remember me
+              </label>
             </div>
+
+            <button type="submit" className="login-form__submit" disabled={isSubmitting || !isFormComplete}>
+              {isSubmitting ? 'Signing in...' : 'Sign In'}
+            </button>
           </form>
 
-          <div className="login-divider" aria-hidden="true">
-            <span>or</span>
-          </div>
-
-          {/* Container is required because Google script renders an iframe button into this node. */}
-          <div className="login-social">
-            <div className="login-social__google-container" ref={googleButtonContainerRef} />
-          </div>
-
-          {/* Inline status keeps auth feedback visible without disrupting the form layout. */}
-          {googleAuthError ? (
-            <p className="login-form__error-message" role="alert">
-              {googleAuthError}
-            </p>
-          ) : null}
-          {googleUser ? (
-            <p className="login-panel__status">
-              Signed in as <strong>{googleUser.name}</strong> ({googleUser.email})
-            </p>
-          ) : null}
+          <p className="login-form__switch">
+            New to Corporatify? <Link to="/signup">Create account</Link>
+          </p>
         </article>
 
-        {/* Right banner intentionally uses a dummy photo while preserving the requested visual composition. */}
-        <aside className="login-banner" aria-hidden="true">
-          <div className="login-banner__overlay" />
-          <p className="login-banner__title">Aespa</p>
-          <div className="login-banner__caption">
-            <p className="login-banner__name">Karina</p>
-            <p className="login-banner__text">a stylish placeholder profile for your authentication layout preview.</p>
-          </div>
-        </aside>
+        <img src={corporatifyLogo} alt="Corporatify Logo" className="login-panel__brand-logo" />
       </section>
     </main>
   );
 }
 
 export default LoginPage;
-

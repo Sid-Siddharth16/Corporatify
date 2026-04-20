@@ -156,6 +156,30 @@ function Home() {
     }
   };
 
+  /**
+   * Clears only the output area so users can quickly reset generated content.
+   * @returns {void}
+   */
+  const handleClearOutput = () => {
+    setOutputValue('');
+    setIsCopied(false);
+  };
+
+  /**
+   * Moves generated output back into the input editor for iterative refinement.
+   * @returns {void}
+   */
+  const handleMoveToEditor = () => {
+    if (!outputValue.trim()) {
+      return;
+    }
+    // Copies output into input so users can continue editing from the polished version.
+    setInputValue(outputValue);
+    // Clears output after move to match requested "move to editor" behavior.
+    setOutputValue('');
+    setIsCopied(false);
+  };
+
   return (
     <section className="dashboard-home" aria-label="Corporatify converter workspace">
       <div className="dashboard-layout">
@@ -219,7 +243,13 @@ function Home() {
               onConvert={handleConvert}
               isLoading={isLoading}
             />
-            <OutputBox outputValue={outputValue} onCopy={handleCopy} isCopied={isCopied} />
+            <OutputBox
+              outputValue={outputValue}
+              onCopy={handleCopy}
+              onClearOutput={handleClearOutput}
+              onMoveToEditor={handleMoveToEditor}
+              isCopied={isCopied}
+            />
           </div>
         </div>
       </div>
