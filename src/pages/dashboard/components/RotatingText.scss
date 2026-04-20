@@ -1,0 +1,50 @@
+/* Centers and reserves visual space for rotating headlines to avoid editor layout shifts. */
+.rotating-text {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 58px;
+  margin-bottom: 0.85rem;
+  text-align: center;
+  width: 100%;
+  // max-width: 780px;
+  overflow: hidden;
+}
+
+/* Base text style keeps one stable line in flow to prevent overlap and visible lag. */
+.rotating-text__line {
+  margin: 0;
+  font-family: var(--sans);
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  line-height: 1.3;
+  transition: opacity 380ms ease, transform 380ms ease;
+  will-change: opacity, transform;
+  text-align: center;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Exit state slides up and fades to make room for the next text. */
+.rotating-text__line--exit {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
+/* Enter state restores visibility and position for the new text line. */
+.rotating-text__line--enter {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Optional gradient treatment adds modern emphasis while preserving fallback readability. */
+@supports ((-webkit-background-clip: text) or (background-clip: text)) {
+  .rotating-text__line {
+    /* Theme token allows rotating headline gradient to adapt for light, dark, and red palettes. */
+    background: var(--dashboard-rotating-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+}

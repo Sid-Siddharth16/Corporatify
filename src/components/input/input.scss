@@ -1,0 +1,26 @@
+/* Base container keeps common input elements grouped and vertically aligned. */
+.common-input {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+/* Default control style acts as a fallback when consumer classes are not provided. */
+.common-input__control {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Helper copy is intentionally subtle to avoid competing with validation states. */
+.common-input__helper {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--text);
+}
+
+/* Error copy is visually prominent for quick validation feedback. */
+.common-input__error {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #d73a49;
+}

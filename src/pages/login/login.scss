@@ -1,0 +1,389 @@
+/* Centers the full login shell and applies a soft neutral background behind the two-panel card. */
+.login-page {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: #ececec;
+}
+
+/* Creates the desktop-first split layout requested in the reference design. */
+.login-layout {
+  width: min(100%, 1540px);
+  min-height: 840px;
+  background: #fff;
+  display: grid;
+  grid-template-columns: minmax(370px, 0.95fr) minmax(420px, 1.05fr);
+  border-radius: 0;
+  overflow: hidden;
+  box-shadow: 0 30px 70px rgba(33, 38, 55, 0.2);
+}
+
+/* Left panel hosts all form controls and keeps spacing comfortable for readability. */
+.login-panel {
+  padding: 30px 38px 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* Header groups the identity mark and heading copy similar to the provided mockup. */
+.login-panel__header {
+  margin-bottom: 24px;
+}
+
+/* Brand row keeps a minimal typographic lockup without overpowering the form content. */
+.login-panel__brand {
+  width: 100%;
+  margin-bottom: 18px;
+}
+
+/* Logo image scales down responsively to prevent crowding on smaller screens. */
+.login-panel__brand-logo {
+  display: block;
+  width: 100%;
+  max-width: 360px;
+  height: auto;
+  object-fit: contain;
+}
+
+/* Main heading establishes clear hierarchy and mirrors the "Welcome back!" emphasis. */
+.login-panel__title {
+  margin: 0;
+  font-size: clamp(2rem, 3.4vw, 2.95rem);
+  line-height: 1.08;
+  letter-spacing: -0.01em;
+  color: #1a1a1a;
+}
+
+/* Subheading adds supportive context text and keeps a calm tone beneath the title. */
+.login-panel__subtitle {
+  margin: 10px 0 0;
+  font-size: 1rem;
+  line-height: 1.45;
+  color: #777;
+}
+
+/* Form stack uses generous vertical rhythm for cleaner scanning during input. */
+.login-form {
+  display: grid;
+  gap: 16px;
+}
+
+/* Label styling favors clarity while staying understated to match minimalist aesthetics. */
+.login-form__label {
+  margin-bottom: 7px;
+  display: inline-block;
+  font-size: 2rem;
+  color: #131313;
+  letter-spacing: -0.01em;
+}
+
+/* Inputs are intentionally simple to mirror the thin-border style from the target UI. */
+.login-form__input {
+  width: 100%;
+  border: 1px solid #d8d8d8;
+  border-radius: 0;
+  padding: 11px 12px;
+  font-size: 0.95rem;
+  color: #1f1f1f;
+  background: #fff;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Visible focus feedback improves accessibility for keyboard users and low-vision users. */
+.login-form__input:focus-visible {
+  outline: none;
+  border-color: #9d9d9d;
+  box-shadow: 0 0 0 3px rgba(90, 90, 90, 0.16);
+}
+
+/* Placeholder tone is softened to preserve visual hierarchy against entered text. */
+.login-form__input::placeholder {
+  color: #b7b7b7;
+}
+
+/* Error state is high contrast enough to quickly identify invalid fields. */
+.login-form__input--error {
+  border-color: #d45757;
+  box-shadow: 0 0 0 2px rgba(212, 87, 87, 0.1);
+}
+
+/* Field-level error text stays compact so it does not disrupt the form rhythm. */
+.login-form__error-message {
+  margin: 4px 0 0;
+  font-size: 0.82rem;
+  line-height: 1.35;
+  color: #b42e2e;
+}
+
+/* Progressive password container animates into view after the helper validates email. */
+.login-password-step {
+  display: grid;
+  gap: 13px;
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transform: translateY(-8px);
+  transition: max-height 0.6s ease, opacity 0.42s ease, transform 0.5s ease, margin-top 0.4s ease;
+}
+
+/* Expanded state reveals the password section smoothly to guide the user step-by-step. */
+.login-password-step--visible {
+  max-height: 360px;
+  opacity: 1;
+  transform: translateY(0);
+  margin-top: 2px;
+}
+
+/* Utility row aligns remember-me and password recovery actions on a single baseline. */
+.login-form__row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-top: -2px;
+}
+
+/* Checkbox styling keeps the control readable while preserving a compact utility tone. */
+.login-form__checkbox {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.9rem;
+  color: #232323;
+}
+
+/* Link-style button follows semantic button behavior while looking like plain text action. */
+.login-form__link-button {
+  border: 0;
+  background: transparent;
+  padding: 0;
+  font-size: 0.9rem;
+  color: #161616;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+/* Primary CTA uses a dark block style to mirror the screenshot's sign-in button treatment. */
+.login-form__submit {
+  border: 0;
+  border-radius: 0;
+  width: 100%;
+  padding: 11px 16px;
+  background: #101010;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity 0.2s ease, transform 0.16s ease;
+}
+
+/* Hover feedback adds subtle motion to make the button feel responsive. */
+.login-form__submit:hover {
+  transform: translateY(-1px);
+  opacity: 0.95;
+}
+
+/* Disabled state communicates that submit remains blocked until helper validation passes. */
+.login-form__submit:disabled {
+  opacity: 0.52;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Divider visually separates credential form from social sign-in options. */
+.login-divider {
+  margin: 12px 0 12px;
+  position: relative;
+  text-align: center;
+  color: #7d7d7d;
+  font-size: 0.88rem;
+}
+
+/* Horizontal rule creates a clean split while the text remains centered in front. */
+.login-divider::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  border-top: 1px solid #e1e1e1;
+}
+
+/* Span background masks the line under text for a polished divider effect. */
+.login-divider span {
+  position: relative;
+  background: #fff;
+  padding: 0 8px;
+}
+
+/* Social area centers the injected Google button and keeps width aligned to form controls. */
+.login-social {
+  display: flex;
+  justify-content: center;
+}
+
+/* Container spans full width so GIS button can size itself predictably. */
+.login-social__google-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+/* Success/status message appears under the social section without shifting core layout heavily. */
+.login-panel__status {
+  margin-top: 12px;
+  color: #3f3f3f;
+  font-size: 0.9rem;
+}
+
+/* Right banner uses a dummy background image as requested while preserving visual impact. */
+.login-banner {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 18px 22px;
+  color: #fff;
+  background-image:
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.22), rgba(0, 0, 0, 0.4)),
+    url('https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=1200&q=80');
+  background-size: cover;
+  background-position: center;
+}
+
+/* Overlay layer adds extra depth and improves text contrast over bright image regions. */
+.login-banner__overlay {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 35% 24%, rgba(255, 255, 255, 0.15), transparent 30%),
+    linear-gradient(180deg, rgba(8, 12, 26, 0.2) 0%, rgba(9, 13, 28, 0.52) 100%);
+  pointer-events: none;
+}
+
+/* Top-right heading mirrors the decorative title placement from the reference mockup. */
+.login-banner__title {
+  position: relative;
+  margin: 0 0 0 auto;
+  font-size: clamp(2rem, 3.3vw, 2.95rem);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+/* Bottom caption anchors key image-side text similar to the style in your screenshot. */
+.login-banner__caption {
+  position: relative;
+  max-width: 80%;
+}
+
+/* Name line uses larger type to create a strong visual focal point at banner bottom. */
+.login-banner__name {
+  margin: 0;
+  font-size: clamp(2rem, 4.6vw, 3.25rem);
+  line-height: 1;
+  font-weight: 700;
+}
+
+/* Support text remains compact and readable without competing with the large name. */
+.login-banner__text {
+  margin: 10px 0 0;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  color: rgba(246, 248, 255, 0.9);
+}
+
+/* Tablet breakpoint reduces panel padding and keeps proportions balanced on medium screens. */
+@media (max-width: 1080px) {
+  /* Rebalances panel widths before full stacking so tablet layout remains proportional. */
+  .login-layout {
+    width: min(100%, 940px);
+    grid-template-columns: minmax(330px, 1fr) minmax(360px, 1fr);
+  }
+
+  .login-panel {
+    padding-inline: 24px;
+  }
+
+  .login-panel__brand {
+    margin-bottom: 14px;
+  }
+
+  .login-panel__brand-logo {
+    max-width: 310px;
+  }
+
+  .login-form__label {
+    font-size: 1.55rem;
+  }
+}
+
+/* Mobile layout stacks form over banner for usability and scroll-friendly interaction. */
+@media (max-width: 840px) {
+  .login-layout {
+    grid-template-columns: 1fr;
+    min-height: auto;
+  }
+
+  .login-panel {
+    padding: 22px 18px 16px;
+    justify-content: flex-start;
+  }
+
+  /* Shrinks logo block so first-screen content stays focused on the form on phones. */
+  .login-panel__brand-logo {
+    max-width: 100%;
+  }
+
+  .login-form {
+    gap: 12px;
+  }
+
+  .login-form__label {
+    font-size: 1.45rem;
+  }
+
+  .login-banner {
+    min-height: 220px;
+    padding: 14px 16px;
+  }
+
+  .login-banner__caption {
+    max-width: 92%;
+  }
+
+  .login-banner__name {
+    font-size: clamp(1.65rem, 8vw, 2.2rem);
+  }
+
+  .login-banner__text {
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 520px) {
+  /* On very small phones, utility actions stack to avoid cramped interaction targets. */
+  .login-page {
+    padding: 10px;
+  }
+
+  .login-layout {
+    box-shadow: 0 16px 36px rgba(33, 38, 55, 0.15);
+  }
+
+  .login-form__row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .login-form__submit {
+    font-size: 0.95rem;
+  }
+
+  /* Hides decorative subtitle to prioritize legibility and keep mobile layout uncluttered. */
+  .login-banner__text {
+    display: none;
+  }
+}

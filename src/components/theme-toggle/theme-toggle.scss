@@ -1,0 +1,21 @@
+/* Compact theme switcher button for toggling light and dark mode from navbar. */
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  border: 1px solid var(--dashboard-ui-border);
+  background: var(--dashboard-card-bg);
+  color: var(--dashboard-text-strong);
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  /* Transition keeps theme-toggle interactions smooth while theme colors change globally. */
+  transition: transform 0.2s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+/* Subtle hover treatment gives tactile response without overpowering navbar actions. */
+.theme-toggle:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px -16px var(--dashboard-input-focus-ring);
+}

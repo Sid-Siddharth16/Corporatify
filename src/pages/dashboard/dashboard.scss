@@ -1,0 +1,326 @@
+/* Full page wrapper for authenticated dashboard area. */
+.dashboard-page {
+  min-height: 100vh;
+  background-color: var(--dashboard-page-bg);
+  /* Layered glow is intentionally low-opacity so it enhances depth without distracting content. */
+  background-image: var(--dashboard-bg-glow);
+  background-repeat: no-repeat;
+  background-size: 1200px 1200px;
+  background-position: top left;
+}
+
+/* Contains the corporatify workspace below the navbar with stable horizontal padding. */
+.dashboard-home {
+  padding: 1.5rem;
+}
+
+/* App-level split layout places a fixed-width chat sidebar beside the conversion workspace. */
+.dashboard-layout {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 1rem;
+  min-height: calc(100vh - 116px);
+}
+
+/* Main workspace container allows the input/output panels to stretch naturally. */
+.dashboard-main {
+  min-width: 0;
+}
+
+/* Sidebar shell visually mirrors chat app navigation with darker contrast and rounded corners. */
+.dashboard-sidebar {
+  background: var(--dashboard-sidebar-bg);
+  border: 1px solid var(--dashboard-ui-border);
+  border-radius: 16px;
+  padding: 0.9rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  min-height: 0;
+}
+
+/* "New chat" CTA is pinned at the top so creating a fresh thread is always one click away. */
+.dashboard-sidebar__new-chat {
+  border: 1px solid var(--dashboard-ui-border);
+  background: var(--dashboard-card-bg);
+  color: var(--dashboard-text-strong);
+  border-radius: 10px;
+  padding: 0.7rem 0.8rem;
+  text-align: left;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* Scrollable chat list keeps the sidebar compact while supporting long conversation history. */
+.dashboard-sidebar__list {
+  overflow-y: auto;
+  padding-right: 0.3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+/* Empty state text guides users before they create the first conversion thread. */
+.dashboard-sidebar__empty {
+  color: var(--dashboard-text-muted);
+  font-size: 0.9rem;
+  margin: 0.3rem 0 0;
+}
+
+/* Each chat row aligns title and action controls similar to ChatGPT thread rows. */
+.dashboard-chat-item {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  border-radius: 10px;
+  padding: 0.25rem;
+  position: relative;
+}
+
+/* Active row gives clear context about which chat data is loaded in the editor area. */
+.dashboard-chat-item--active {
+  /* Uses theme variable so active states stay readable in both light and black themes. */
+  background: var(--dashboard-accent-soft);
+}
+
+/* Primary chat button truncates long titles so each row remains one line and readable. */
+.dashboard-chat-item__select {
+  flex: 1;
+  text-align: left;
+  background: transparent;
+  border: none;
+  color: var(--dashboard-text-strong);
+  font-size: 0.9rem;
+  padding: 0.45rem 0.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Action area wraps the menu trigger and floating menu for per-chat utility actions. */
+.dashboard-chat-item__actions {
+  position: relative;
+}
+
+/* Three-dot trigger intentionally stays compact to match common chat navigation patterns. */
+.dashboard-chat-item__menu-trigger {
+  border: none;
+  background: transparent;
+  color: var(--dashboard-text-muted);
+  border-radius: 8px;
+  font-size: 1rem;
+  padding: 0.35rem 0.45rem;
+  cursor: pointer;
+  line-height: 1;
+}
+
+/* Popover menu anchors below the trigger and isolates destructive actions from primary taps. */
+.dashboard-chat-item__menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 6px);
+  z-index: 5;
+  border: 1px solid var(--dashboard-ui-border);
+  border-radius: 10px;
+  background: var(--dashboard-card-bg);
+  box-shadow: 0 8px 20px -14px rgba(31, 41, 55, 0.6);
+  min-width: 120px;
+}
+
+/* Menu button uses warning color to communicate that deleting a thread is destructive. */
+.dashboard-chat-item__menu button {
+  width: 100%;
+  border: none;
+  background: transparent;
+  color: #cf3d3d;
+  text-align: left;
+  padding: 0.55rem 0.7rem;
+  cursor: pointer;
+}
+
+/* Two-column split layout that places input on the left and output on the right. */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+}
+
+/* Shared panel surface used by both input and output sections. */
+.dashboard-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  border: 1px solid var(--dashboard-ui-border);
+  border-radius: 16px;
+  background: var(--dashboard-card-bg);
+  box-shadow: 0 12px 26px -18px rgba(63, 43, 102, 0.45);
+  padding: 1.1rem;
+  /* Transition supports subtle premium hover elevation across themes. */
+  transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
+}
+
+/* Hover accent provides lightweight interactivity and helps cards feel tactile. */
+.dashboard-panel:hover {
+  border-color: var(--dashboard-card-hover-border);
+  box-shadow: var(--dashboard-card-hover-shadow);
+  transform: translateY(-1px);
+}
+
+/* Panel heading style keeps section hierarchy clear and readable. */
+.dashboard-panel__title {
+  margin: 0;
+  font-size: 1.2rem;
+  color: var(--dashboard-text-strong);
+}
+
+/* Main textarea style shared by input and output for consistent visual weight. */
+.dashboard-textarea {
+  width: 100%;
+  min-height: 300px;
+  border-radius: 12px;
+  border: 1px solid var(--dashboard-ui-border);
+  padding: 0.9rem 0.95rem;
+  font-size: 0.97rem;
+  line-height: 1.5;
+  resize: vertical;
+  box-sizing: border-box;
+  background: var(--dashboard-card-bg);
+  color: var(--dashboard-text-strong);
+  font-family: var(--sans);
+}
+
+/* Focus ring uses theme token so each palette gets an appropriate accessible highlight. */
+.dashboard-textarea:focus-visible {
+  outline: none;
+  border-color: var(--dashboard-card-hover-border);
+  box-shadow: 0 0 0 3px var(--dashboard-input-focus-ring);
+}
+
+/* Read-only output surface has a subtle shade shift so it feels non-editable. */
+.dashboard-textarea--readonly {
+  background: var(--dashboard-sidebar-bg);
+}
+
+/* Field wrapper keeps tone label and selector grouped with clear spacing. */
+.dashboard-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+/* Form label style for compact, accessible control captions. */
+.dashboard-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--dashboard-text-muted);
+}
+
+/* Tone dropdown styling aligns selector appearance with the rest of the dashboard controls. */
+.dashboard-select {
+  border-radius: 10px;
+  border: 1px solid var(--dashboard-ui-border);
+  background: var(--dashboard-card-bg);
+  padding: 0.65rem 0.75rem;
+  font-size: 0.9rem;
+  color: var(--dashboard-text-strong);
+}
+
+/* Select focus mirrors textarea feedback for a consistent input interaction model. */
+.dashboard-select:focus-visible {
+  outline: none;
+  border-color: var(--dashboard-card-hover-border);
+  box-shadow: 0 0 0 3px var(--dashboard-input-focus-ring);
+}
+
+/* Base button style shared by primary and secondary action buttons. */
+.dashboard-button {
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* Primary action styling highlights the convert button as the main CTA. */
+.dashboard-button--primary {
+  border: none;
+  /* Primary CTA now uses per-theme gradient tokens, including the new crimson premium style. */
+  background: var(--dashboard-button-primary-bg);
+  color: var(--dashboard-button-primary-text);
+}
+
+/* Secondary action styling keeps copy button present but visually lighter. */
+.dashboard-button--secondary {
+  border: 1px solid var(--dashboard-ui-border);
+  background: var(--dashboard-card-bg);
+  color: var(--dashboard-text-strong);
+}
+
+/* Hover adds restrained glow and scale to keep interactions polished, not flashy. */
+.dashboard-button--primary:hover:not(:disabled) {
+  background: var(--dashboard-button-primary-hover-bg);
+  transform: translateY(-1px) scale(1.01);
+  box-shadow: 0 8px 24px -14px var(--dashboard-input-focus-ring);
+}
+
+/* Disabled states communicate blocked actions during loading/empty output. */
+.dashboard-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Reusable scrollbar skin creates visible but unobtrusive scrollbars for chat history and text areas. */
+.dashboard-sidebar__list,
+.dashboard-textarea {
+  scrollbar-width: thin;
+  /* Applies per-theme scrollbar colors for better contrast against dark surfaces. */
+  scrollbar-color: var(--dashboard-scrollbar-thumb) var(--dashboard-scrollbar-track);
+}
+
+/* WebKit scrollbar styles maintain the same aesthetic in Chromium-based browsers. */
+.dashboard-sidebar__list::-webkit-scrollbar,
+.dashboard-textarea::-webkit-scrollbar {
+  width: 8px;
+}
+
+.dashboard-sidebar__list::-webkit-scrollbar-track,
+.dashboard-textarea::-webkit-scrollbar-track {
+  background: var(--dashboard-scrollbar-track);
+  border-radius: 999px;
+}
+
+.dashboard-sidebar__list::-webkit-scrollbar-thumb,
+.dashboard-textarea::-webkit-scrollbar-thumb {
+  background: var(--dashboard-scrollbar-thumb);
+  border-radius: 999px;
+}
+
+/* Error message row gives concise feedback when conversion or copy fails. */
+.dashboard-error {
+  margin-top: 0.8rem;
+  /* Error color follows theme accent token to support "toast-like" feedback consistency. */
+  color: var(--dashboard-toast-accent);
+  font-size: 0.9rem;
+}
+
+/* Mobile layout stacks sections vertically for smaller screens without losing usability. */
+@media (max-width: 900px) {
+  .dashboard-home {
+    padding: 1rem;
+  }
+
+  /* Stacks sidebar above content on small screens to preserve tap targets and readability. */
+  .dashboard-layout {
+    grid-template-columns: 1fr;
+    min-height: auto;
+  }
+
+  .dashboard-sidebar {
+    max-height: 260px;
+  }
+
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+}

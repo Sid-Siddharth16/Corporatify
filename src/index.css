@@ -1,0 +1,237 @@
+:root {
+  --text: #6b6375;
+  --text-h: #08060d;
+  --bg: #fff;
+  --border: #e5e4e7;
+  --code-bg: #f4f3ec;
+  --accent: #aa3bff;
+  --accent-bg: rgba(170, 59, 255, 0.1);
+  --accent-border: rgba(170, 59, 255, 0.5);
+  --social-bg: rgba(244, 243, 236, 0.5);
+  --shadow:
+    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
+
+  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
+  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
+  --mono: ui-monospace, Consolas, monospace;
+  --dashboard-navbar-bg: #fffdfd;
+  --dashboard-ui-border: #ece8f8;
+  --dashboard-text-strong: #2d2147;
+  --dashboard-text-muted: #6f6585;
+  /* Uses a solid surface by default to remove gradient-heavy visuals from dashboard background. */
+  --dashboard-page-bg: #0d0f12;
+  --dashboard-card-bg: #ffffff;
+  --dashboard-sidebar-bg: #f7f4ff;
+  --dashboard-sidebar-item-bg: #efe8ff;
+  --dashboard-sidebar-item-active-bg: #e4d8ff;
+  --dashboard-sidebar-item-active-border: #c7b0ff;
+  --dashboard-accent: #6f4acb;
+  --dashboard-accent-soft: rgba(111, 74, 203, 0.12);
+  --dashboard-scrollbar-track: rgba(111, 74, 203, 0.12);
+  --dashboard-scrollbar-thumb: rgba(111, 74, 203, 0.45);
+  /* Shared dashboard interaction tokens keep buttons, focus rings, and hover states theme-driven. */
+  --dashboard-button-primary-text: #ffffff;
+  --dashboard-button-primary-bg: linear-gradient(135deg, #6f4acb, #8e66f0);
+  --dashboard-button-primary-hover-bg: linear-gradient(135deg, #7c57d8, #9f7cff);
+  --dashboard-input-focus-ring: rgba(111, 74, 203, 0.28);
+  --dashboard-card-hover-border: #c7b0ff;
+  --dashboard-card-hover-shadow: 0 16px 34px -22px rgba(91, 67, 163, 0.5);
+  --dashboard-toast-accent: #cf3d3d;
+  --dashboard-rotating-gradient: linear-gradient(90deg, #6f4acb 0%, #8e66f0 45%, #4d8dff 100%);
+  --dashboard-bg-glow: radial-gradient(circle at 18% 16%, rgba(111, 74, 203, 0.12), transparent 40%);
+
+  font: 18px/145% var(--sans);
+  letter-spacing: 0.18px;
+  color-scheme: light dark;
+  color: var(--text);
+  background: var(--bg);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  @media (max-width: 1024px) {
+    font-size: 16px;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --text: #9ca3af;
+    --text-h: #f3f4f6;
+    --bg: #16171d;
+    --border: #2e303a;
+    --code-bg: #1f2028;
+    --accent: #c084fc;
+    --accent-bg: rgba(192, 132, 252, 0.15);
+    --accent-border: rgba(192, 132, 252, 0.5);
+    --social-bg: rgba(47, 48, 58, 0.5);
+    --shadow:
+      rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
+  }
+
+  #social .button-icon {
+    filter: invert(1) brightness(2);
+  }
+}
+
+#root {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: var(--sans);
+}
+
+body {
+  margin: 0;
+}
+
+h1,
+h2 {
+  font-family: var(--heading);
+  font-weight: 500;
+  color: var(--text-h);
+}
+
+h1 {
+  font-size: 56px;
+  letter-spacing: -1.68px;
+  margin: 32px 0;
+  @media (max-width: 1024px) {
+    font-size: 36px;
+    margin: 20px 0;
+  }
+}
+h2 {
+  font-size: 24px;
+  line-height: 118%;
+  letter-spacing: -0.24px;
+  margin: 0 0 8px;
+  @media (max-width: 1024px) {
+    font-size: 20px;
+  }
+}
+p {
+  margin: 0;
+}
+
+code,
+.counter {
+  font-family: var(--mono);
+  display: inline-flex;
+  border-radius: 4px;
+  color: var(--text-h);
+}
+
+code {
+  font-size: 15px;
+  line-height: 135%;
+  padding: 4px 8px;
+  background: var(--code-bg);
+}
+
+/* Explicit light theme override keeps visuals stable regardless of OS preference. */
+:root[data-theme='light'] {
+  color-scheme: light;
+  --dashboard-navbar-bg: #fffdfd;
+  --dashboard-ui-border: #ece8f8;
+  --dashboard-text-strong: #2d2147;
+  --dashboard-text-muted: #6f6585;
+  /* Keeps light mode intentionally flat and clean while preserving contrast. */
+  --dashboard-page-bg: #f6f7fb;
+  --dashboard-card-bg: #ffffff;
+  --dashboard-sidebar-bg: #f7f4ff;
+  --dashboard-sidebar-item-bg: #efe8ff;
+  --dashboard-sidebar-item-active-bg: #e4d8ff;
+  --dashboard-sidebar-item-active-border: #c7b0ff;
+  --dashboard-accent: #6f4acb;
+  --dashboard-accent-soft: rgba(111, 74, 203, 0.12);
+  --dashboard-scrollbar-track: rgba(111, 74, 203, 0.12);
+  --dashboard-scrollbar-thumb: rgba(111, 74, 203, 0.45);
+  --dashboard-button-primary-text: #ffffff;
+  --dashboard-button-primary-bg: linear-gradient(135deg, #6f4acb, #8e66f0);
+  --dashboard-button-primary-hover-bg: linear-gradient(135deg, #7c57d8, #9f7cff);
+  --dashboard-input-focus-ring: rgba(111, 74, 203, 0.28);
+  --dashboard-card-hover-border: #c7b0ff;
+  --dashboard-card-hover-shadow: 0 16px 34px -22px rgba(91, 67, 163, 0.5);
+  --dashboard-toast-accent: #cf3d3d;
+  --dashboard-rotating-gradient: linear-gradient(90deg, #6f4acb 0%, #8e66f0 45%, #4d8dff 100%);
+  --dashboard-bg-glow: radial-gradient(circle at 18% 16%, rgba(111, 74, 203, 0.12), transparent 40%);
+}
+
+/* Dark theme overrides provide consistent contrast for dashboard surfaces and controls. */
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  /* Dark theme is refocused to a black-based palette without purple gradients. */
+  --dashboard-navbar-bg: #111317;
+  --dashboard-ui-border: #2a2f36;
+  --dashboard-text-strong: #eef2f7;
+  --dashboard-text-muted: #9ca8b8;
+  --dashboard-page-bg: #0b0d10;
+  --dashboard-card-bg: #15191f;
+  --dashboard-sidebar-bg: #11151a;
+  --dashboard-sidebar-item-bg: #1a1f26;
+  --dashboard-sidebar-item-active-bg: #222935;
+  --dashboard-sidebar-item-active-border: #3e4e63;
+  --dashboard-accent: #4d6b8f;
+  --dashboard-accent-soft: rgba(77, 107, 143, 0.2);
+  --dashboard-scrollbar-track: rgba(77, 107, 143, 0.2);
+  --dashboard-scrollbar-thumb: rgba(114, 150, 190, 0.48);
+  --dashboard-button-primary-text: #ffffff;
+  --dashboard-button-primary-bg: linear-gradient(135deg, #38506b, #4d6b8f);
+  --dashboard-button-primary-hover-bg: linear-gradient(135deg, #466183, #5d7ea7);
+  --dashboard-input-focus-ring: rgba(114, 150, 190, 0.32);
+  --dashboard-card-hover-border: #4d6b8f;
+  --dashboard-card-hover-shadow: 0 18px 36px -22px rgba(77, 107, 143, 0.52);
+  --dashboard-toast-accent: #ef6b6b;
+  --dashboard-rotating-gradient: linear-gradient(90deg, #9db9d9 0%, #7fa0c7 45%, #5d7ea7 100%);
+  --dashboard-bg-glow: radial-gradient(circle at 16% 14%, rgba(88, 120, 160, 0.16), transparent 42%);
+}
+
+/* Red theme adds a premium crimson look while staying accessible on dark surfaces. */
+:root[data-theme='red'] {
+  color-scheme: dark;
+  --dashboard-navbar-bg: #1a1314;
+  --dashboard-ui-border: rgba(255, 255, 255, 0.1);
+  --dashboard-text-strong: #ffffff;
+  --dashboard-text-muted: #b0b0b0;
+  --dashboard-page-bg: #121212;
+  --dashboard-card-bg: #1e1e1e;
+  --dashboard-sidebar-bg: #181818;
+  --dashboard-sidebar-item-bg: #232323;
+  --dashboard-sidebar-item-active-bg: #2b1b1e;
+  --dashboard-sidebar-item-active-border: #e63946;
+  --dashboard-accent: #f94144;
+  --dashboard-accent-soft: rgba(230, 57, 70, 0.2);
+  --dashboard-scrollbar-track: rgba(255, 255, 255, 0.08);
+  --dashboard-scrollbar-thumb: rgba(249, 65, 68, 0.55);
+  --dashboard-button-primary-text: #ffffff;
+  --dashboard-button-primary-bg: linear-gradient(135deg, #e63946, #ff6b6b);
+  --dashboard-button-primary-hover-bg: linear-gradient(135deg, #f24550, #ff7b7b);
+  --dashboard-input-focus-ring: rgba(230, 57, 70, 0.32);
+  --dashboard-card-hover-border: #e63946;
+  --dashboard-card-hover-shadow: 0 18px 38px -24px rgba(230, 57, 70, 0.6);
+  --dashboard-toast-accent: #f94144;
+  --dashboard-rotating-gradient: linear-gradient(90deg, #e63946 0%, #ff6b6b 55%, #f94144 100%);
+  --dashboard-bg-glow: radial-gradient(circle at 16% 16%, rgba(230, 57, 70, 0.16), transparent 42%);
+}
+
+/* Smooth transitions keep theme switching polished across shared dashboard surfaces. */
+body,
+.dashboard-page,
+.dashboard-navbar,
+.dashboard-sidebar,
+.dashboard-panel,
+.dashboard-button,
+.dashboard-select,
+.dashboard-textarea,
+.theme-toggle {
+  transition:
+    background-color 0.3s ease,
+    background 0.3s ease,
+    border-color 0.3s ease,
+    color 0.3s ease,
+    box-shadow 0.3s ease;
+}

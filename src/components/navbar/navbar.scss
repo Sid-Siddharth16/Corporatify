@@ -1,0 +1,75 @@
+/* Layout for the reusable dashboard navigation header. */
+.dashboard-navbar {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.1rem 1.5rem;
+  border-bottom: 1px solid var(--dashboard-ui-border);
+  background: var(--dashboard-navbar-bg);
+}
+
+/* Keeps brand and product tagline grouped on the left side of the navbar. */
+.dashboard-navbar__brand-block {
+  display: grid;
+  gap: 0.2rem;
+}
+
+/* Brand label styling to keep product identity visible on dashboard pages. */
+.dashboard-navbar__brand {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--dashboard-text-strong);
+}
+
+/* Small descriptive line that clarifies app purpose in one sentence. */
+.dashboard-navbar__tagline {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--dashboard-text-muted);
+}
+
+/* Right-side action cluster for user context and logout control. */
+.dashboard-navbar__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 0.2rem;
+}
+
+/* Subtle greeting text that confirms active account identity. */
+.dashboard-navbar__user {
+  font-size: 0.9rem;
+  color: var(--dashboard-text-muted);
+}
+
+/* Primary sign-out control that lets users end their authenticated session. */
+.dashboard-navbar__logout {
+  border: 1px solid var(--dashboard-ui-border);
+  background: var(--dashboard-card-bg);
+  color: var(--dashboard-text-strong);
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  letter-spacing: 1;
+}
+
+/* Soft hover state makes the logout button feel responsive without harsh contrast. */
+.dashboard-navbar__logout:hover {
+  opacity: 0.9;
+}
+
+/* Stacks navbar content naturally on smaller viewports. */
+@media (max-width: 700px) {
+  .dashboard-navbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .dashboard-navbar__actions {
+    justify-content: space-between;
+  }
+}
