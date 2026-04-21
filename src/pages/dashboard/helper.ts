@@ -1,322 +1,194 @@
-import { useEffect, useState } from 'react';
-import type { ChangeEvent } from 'react';
+import { useRef, useState } from 'react';
+import { corporatifyMessage } from '../../services/aiService';
 
 /**
- * Centralized tone options used by dashboard selector and conversion logic.
+ * Tone values match `ToneSelector` options and the AI service contract.
  */
-export type ToneOption = 'polite' | 'very-polite' | 'passive-aggressive';
+export type DashboardTone = 'Polite' | 'Very Polite' | 'Passive Aggressive';
 
 /**
- * Represents one saved conversion item in a chat thread.
+ * One row in the sidebar chat list (flattened thread for this UI).
  */
-export type ChatEntry = {
-  id: string;
-  input: string;
-  output: string;
-  tone: ToneOption;
-  createdAt: number;
-};
-
-/**
- * Represents a single sidebar conversation containing conversion history.
- */
-export type DashboardChat = {
+export type DashboardSidebarChat = {
   id: string;
   title: string;
-  createdAt: number;
-  entries: ChatEntry[];
+  input: string;
+  output: string;
+  tone: DashboardTone;
 };
 
 /**
- * LocalStorage key used to persist dashboard conversations between refreshes.
+ * Creates a lightweight unique id for chat history entries.
  */
-const DASHBOARD_CHATS_STORAGE_KEY = 'corporatify_dashboard_chats';
+const createChatId = (): string => `${Date.now()}-${Math.random().toString(16).slice(2, 8)}`;
 
 /**
- * Return shape for dashboard logic hook so the page component stays presentational.
+ * Derives a short sidebar title from the first line of user input.
+ * @param text Raw input used for the conversion.
  */
-type UseDashboardConverterReturn = {
-  chats: DashboardChat[];
-  activeChatId: string;
-  activeChatTitle: string;
-  rawThoughts: string;
-  corporateVersion: string;
-  tone: ToneOption;
-  isConverting: boolean;
+const buildChatTitle = (text: string): string => text.trim().slice(0, 42) || 'Untitled chat';
+
+/**
+ * Return type for the dashboard workspace hook (all state + handlers for `index.tsx`).
+ */
+export type UseDashboardWorkspaceReturn = {
+  inputValue: string;
+  setInputValue: (value: string) => void;
+  outputValue: string;
+  tone: DashboardTone;
+  setTone: (tone: DashboardTone) => void;
+  isLoading: boolean;
   isCopied: boolean;
-  setRawThoughts: (value: string) => void;
-  handleToneChange: (event: ChangeEvent<HTMLSelectElement>) => void;
-  handleConvert: () => void;
-  handleCopy: () => Promise<void>;
-  handleMoveToEditor: () => void;
-  handleSelectChat: (chatId: string) => void;
-  handleCreateChat: () => void;
+  errorMessage: string;
+  chatHistory: DashboardSidebarChat[];
+  activeChatId: string;
+  openMenuChatId: string;
+  setOpenMenuChatId: (value: string | ((previous: string) => string)) => void;
+  handleNewChat: () => void;
+  handleSelectChat: (chat: DashboardSidebarChat) => void;
   handleDeleteChat: (chatId: string) => void;
+  handleConvert: () => Promise<void>;
+  handleCopy: () => Promise<void>;
+  handleClearOutput: () => void;
+  handleMoveToEditor: () => void;
 };
 
 /**
- * Builds a stable id for local-only chat and message records.
- * @returns Unique identifier string.
+ * Encapsulates Corporatify dashboard workspace state: chat sidebar, convert API, copy/clear/move.
+ * Keeps `index.tsx` focused on layout while all side effects and updates live here.
  */
-const createId = (): string => `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
-
-/**
- * Generates a short chat title from initial message text.
- * @param message First raw message in a chat.
- * @returns Human-readable compact title for sidebar listing.
- */
-const getChatTitleFromMessage = (message: string): string => {
-  const trimmedMessage = message.trim();
-  if (!trimmedMessage) {
-    return 'New chat';
-  }
-  return trimmedMessage.length > 36 ? `${trimmedMessage.slice(0, 36)}...` : trimmedMessage;
-};
-
-/**
- * Reads saved chats from localStorage and falls back safely on parse errors.
- * @returns Previously saved dashboard chats or an empty array.
- */
-const readSavedChats = (): DashboardChat[] => {
-  try {
-    const saved = window.localStorage.getItem(DASHBOARD_CHATS_STORAGE_KEY);
-    if (!saved) {
-      return [];
-    }
-    const parsed = JSON.parse(saved) as DashboardChat[];
-    return Array.isArray(parsed) ? parsed : [];
-  } catch {
-    return [];
-  }
-};
-
-/**
- * Creates a brand-new empty chat so users can start a fresh conversation.
- * @returns Initialized empty chat object.
- */
-const createEmptyChat = (): DashboardChat => ({
-  id: createId(),
-  title: 'New chat',
-  createdAt: Date.now(),
-  entries: [],
-});
-
-/**
- * Converts user text into corporate language and manages UX state (loading/copy/tone).
- * Also persists and restores chat history for a ChatGPT-like sidebar experience.
- * @returns Converter state, chat history, and handlers used by dashboard UI controls.
- */
-export const useDashboardConverter = (): UseDashboardConverterReturn => {
-  // Holds all saved dashboard conversations shown in the left sidebar.
-  const [chats, setChats] = useState<DashboardChat[]>(() => {
-    const savedChats = readSavedChats();
-    return savedChats.length > 0 ? savedChats : [createEmptyChat()];
-  });
-  // Tracks which chat thread is currently active in the workspace.
-  const [activeChatId, setActiveChatId] = useState<string>(() => {
-    const savedChats = readSavedChats();
-    return savedChats[0]?.id ?? createEmptyChat().id;
-  });
-  // Captures the user's raw thought before it is rewritten into corporate language.
-  const [rawThoughts, setRawThoughts] = useState<string>('');
-  // Stores the final converted message shown in the output panel.
-  const [corporateVersion, setCorporateVersion] = useState<string>('');
-  // Tracks selected conversion style for controlled tone adjustments.
-  const [tone, setTone] = useState<ToneOption>('polite');
-  // Prevents duplicate conversion requests while simulated processing is in progress.
-  const [isConverting, setIsConverting] = useState<boolean>(false);
-  // Gives quick feedback when output text is copied successfully.
+export const useDashboardWorkspace = (): UseDashboardWorkspaceReturn => {
+  const [inputValue, setInputValue] = useState<string>('');
+  const [outputValue, setOutputValue] = useState<string>('');
+  const [tone, setTone] = useState<DashboardTone>('Polite');
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const convertInFlightRef = useRef<boolean>(false);
   const [isCopied, setIsCopied] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string>('');
+  const [chatHistory, setChatHistory] = useState<DashboardSidebarChat[]>([]);
+  const [activeChatId, setActiveChatId] = useState<string>('');
+  const [openMenuChatId, setOpenMenuChatId] = useState<string | null>(null);
 
-  /**
-   * Keeps active chat id valid when chats change (e.g., first load/fallback cases).
-   */
-  useEffect(() => {
-    if (!chats.some((chat) => chat.id === activeChatId)) {
-      setActiveChatId(chats[0]?.id ?? '');
-    }
-  }, [chats, activeChatId]);
-
-  /**
-   * Persists chat history whenever conversations are updated.
-   */
-  useEffect(() => {
-    window.localStorage.setItem(DASHBOARD_CHATS_STORAGE_KEY, JSON.stringify(chats));
-  }, [chats]);
-
-  const activeChat = chats.find((chat) => chat.id === activeChatId) ?? chats[0];
-
-  /**
-   * Syncs current input/output fields from the selected chat's latest message.
-   */
-  useEffect(() => {
-    if (!activeChat) {
-      return;
-    }
-    const latestEntry = activeChat.entries[0];
-    setRawThoughts(latestEntry?.input ?? '');
-    setCorporateVersion(latestEntry?.output ?? '');
-    setTone(latestEntry?.tone ?? 'polite');
-  }, [activeChatId]); // Intentional dependency keeps state updates tied to user chat selection.
-
-  /**
-   * Converts direct language into polished corporate phrasing based on selected tone.
-   * @param message Raw user-provided text to be rewritten.
-   * @returns Professionalized message adapted to the chosen communication style.
-   */
-  const createCorporateMessage = (message: string): string => {
-    const trimmedMessage = message.trim();
-    if (!trimmedMessage) {
-      return '';
-    }
-
-    // Uses tone-specific wrappers so the same intent can be expressed with different corporate voices.
-    if (tone === 'very-polite') {
-      return `Thank you for your patience. To align expectations, I wanted to share that ${trimmedMessage.charAt(0).toLowerCase()}${trimmedMessage.slice(1)}. I truly appreciate your understanding and collaboration on this.`;
-    }
-    if (tone === 'passive-aggressive') {
-      return `Just a friendly note for alignment: ${trimmedMessage}. As always, I value everyone's continued attention to detail so we can avoid unnecessary follow-ups.`;
-    }
-    return `For alignment, I wanted to highlight that ${trimmedMessage.charAt(0).toLowerCase()}${trimmedMessage.slice(1)}. Please let me know if you would like me to share additional context.`;
-  };
-
-  /**
-   * Keeps tone updates type-safe and colocated with converter business logic.
-   * @param event Select change event containing next tone value.
-   */
-  const handleToneChange = (event: ChangeEvent<HTMLSelectElement>) => {
-    setTone(event.target.value as ToneOption);
-  };
-
-  /**
-   * Handles conversion action and displays a short loading state for clear UX feedback.
-   */
-  const handleConvert = () => {
-    if (!rawThoughts.trim()) {
-      return;
-    }
-
-    setIsConverting(true);
-    // Simulates processing time so users clearly see conversion feedback.
-    window.setTimeout(() => {
-      const convertedMessage = createCorporateMessage(rawThoughts);
-      const nextEntry: ChatEntry = {
-        id: createId(),
-        input: rawThoughts.trim(),
-        output: convertedMessage,
-        tone,
-        createdAt: Date.now(),
-      };
-
-      // Prepends the newest conversion to the active chat and updates title from first meaningful message.
-      setChats((previousChats) =>
-        previousChats.map((chat) =>
-          chat.id === activeChatId
-            ? {
-                ...chat,
-                title: chat.entries.length === 0 ? getChatTitleFromMessage(nextEntry.input) : chat.title,
-                entries: [nextEntry, ...chat.entries],
-              }
-            : chat,
-        ),
-      );
-      setCorporateVersion(convertedMessage);
-      setIsConverting(false);
-    }, 800);
-  };
-
-  /**
-   * Copies converted output to clipboard for quick reuse in email/chat tools.
-   * @returns Promise resolved once clipboard operation completes.
-   */
-  const handleCopy = async () => {
-    if (!corporateVersion.trim()) {
-      return;
-    }
-
-    await window.navigator.clipboard.writeText(corporateVersion);
-    setIsCopied(true);
-    // Resets copied state so button text can return to default after acknowledgement.
-    window.setTimeout(() => setIsCopied(false), 1500);
-  };
-
-  /**
-   * Moves generated corporate output back into the raw editor for iterative refinement.
-   */
-  const handleMoveToEditor = () => {
-    if (!corporateVersion.trim()) {
-      return;
-    }
-
-    setRawThoughts(corporateVersion);
-  };
-
-  /**
-   * Switches the active conversation and resets transient UI feedback state.
-   * @param chatId Id of the chat selected from sidebar.
-   */
-  const handleSelectChat = (chatId: string) => {
-    setActiveChatId(chatId);
+  const handleNewChat = () => {
+    setInputValue('');
+    setOutputValue('');
+    setErrorMessage('');
     setIsCopied(false);
-    setIsConverting(false);
+    setActiveChatId('');
+    setOpenMenuChatId(null);
   };
 
-  /**
-   * Creates a new empty chat and immediately focuses it for the user.
-   */
-  const handleCreateChat = () => {
-    const nextChat = createEmptyChat();
-    setChats((previousChats) => [nextChat, ...previousChats]);
-    setActiveChatId(nextChat.id);
-    setRawThoughts('');
-    setCorporateVersion('');
-    setTone('polite');
+  const handleSelectChat = (chat: DashboardSidebarChat) => {
+    setInputValue(chat.input);
+    setOutputValue(chat.output);
+    setTone(chat.tone);
+    setErrorMessage('');
     setIsCopied(false);
-    setIsConverting(false);
+    setActiveChatId(chat.id);
+    setOpenMenuChatId(null);
   };
 
-  /**
-   * Deletes a chat thread and safely reassigns active chat so the workspace always has one chat available.
-   * @param chatId Id of chat selected for deletion from sidebar action menu.
-   */
   const handleDeleteChat = (chatId: string) => {
-    setChats((previousChats) => {
-      const remainingChats = previousChats.filter((chat) => chat.id !== chatId);
+    setChatHistory((previousChats) => previousChats.filter((chat) => chat.id !== chatId));
+    setOpenMenuChatId(null);
+    if (activeChatId === chatId) {
+      handleNewChat();
+    }
+  };
 
-      // Keeps at least one available thread so UI never enters an empty broken state.
-      if (remainingChats.length === 0) {
-        const fallbackChat = createEmptyChat();
-        setActiveChatId(fallbackChat.id);
-        return [fallbackChat];
-      }
+  const handleConvert = async () => {
+    if (convertInFlightRef.current === true) {
+      return;
+    }
 
-      // When deleting the active chat, switch to the newest remaining chat for continuity.
-      if (chatId === activeChatId) {
-        setActiveChatId(remainingChats[0].id);
-      }
+    if (!inputValue.trim()) {
+      setErrorMessage('Please enter a message before converting.');
+      setOutputValue('');
+      return;
+    }
 
-      return remainingChats;
-    });
+    convertInFlightRef.current = true as const;
+    setIsLoading(true);
+    setErrorMessage('');
     setIsCopied(false);
-    setIsConverting(false);
+
+    try {
+      const convertedText: string = await corporatifyMessage(inputValue, tone);
+      setOutputValue(convertedText);
+      const chatId = activeChatId || createChatId();
+      setChatHistory((previousChats) => {
+        const updatedChat: DashboardSidebarChat = {
+          id: chatId,
+          title: buildChatTitle(inputValue),
+          input: inputValue,
+          output: convertedText,
+          tone,
+        };
+        const withoutCurrent = previousChats.filter((chat) => chat.id !== chatId);
+        return [updatedChat, ...withoutCurrent];
+      });
+      setActiveChatId(chatId);
+      if (!convertedText) {
+        setErrorMessage('No response received. Please try again.');
+      }
+    } catch (error) {
+      setOutputValue('');
+      const readableError = error instanceof Error ? error.message : 'Conversion failed. Please try again.';
+      setErrorMessage(readableError);
+      console.error('Corporatify conversion error:', error);
+    } finally {
+      convertInFlightRef.current = false as const;
+      setIsLoading(false);
+    }
+  };
+
+  const handleCopy = async () => {
+    if (!outputValue.trim()) {
+      return;
+    }
+    try {
+      await window.navigator.clipboard.writeText(outputValue);
+      setIsCopied(true);
+      window.setTimeout(() => setIsCopied(false as const), 1500);
+    } catch (error) {
+      setErrorMessage('Unable to copy output. Please copy manually.');
+      console.error('Clipboard error:', error);
+    }
+  };
+
+  const handleClearOutput = () => {
+    setOutputValue('');
+    setIsCopied(false as const);
+  };
+
+  const handleMoveToEditor = () => {
+    if (!outputValue.trim()) {
+      return;
+    }
+    setInputValue(outputValue);
+    setOutputValue('');
+    setIsCopied(false as const);
   };
 
   return {
-    chats,
-    activeChatId,
-    activeChatTitle: activeChat?.title ?? 'New chat',
-    rawThoughts,
-    corporateVersion,
+    inputValue,
+    setInputValue,
+    outputValue,
     tone,
-    isConverting,
+    setTone,
+    isLoading,
     isCopied,
-    setRawThoughts,
-    handleToneChange,
+    errorMessage,
+    chatHistory,
+    activeChatId,
+    openMenuChatId,
+    setOpenMenuChatId,
+    handleNewChat,
+    handleSelectChat,
+    handleDeleteChat,
     handleConvert,
     handleCopy,
+    handleClearOutput,
     handleMoveToEditor,
-    handleSelectChat,
-    handleCreateChat,
-    handleDeleteChat,
   };
 };

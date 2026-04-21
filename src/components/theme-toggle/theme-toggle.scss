@@ -3,7 +3,8 @@
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  border: 1px solid var(--dashboard-ui-border);
+  // border: 1px solid var(--dashboard-ui-border);
+  border: none;
   background: var(--dashboard-card-bg);
   color: var(--dashboard-text-strong);
   border-radius: 0.5rem;
