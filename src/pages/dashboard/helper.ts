@@ -67,7 +67,7 @@ export const useDashboardWorkspace = (): UseDashboardWorkspaceReturn => {
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [chatHistory, setChatHistory] = useState<DashboardSidebarChat[]>([]);
   const [activeChatId, setActiveChatId] = useState<string>('');
-  const [openMenuChatId, setOpenMenuChatId] = useState<string | null>(null);
+  const [openMenuChatId, setOpenMenuChatId] = useState<string>('');
 
   const handleNewChat = () => {
     setInputValue('');
@@ -75,7 +75,7 @@ export const useDashboardWorkspace = (): UseDashboardWorkspaceReturn => {
     setErrorMessage('');
     setIsCopied(false);
     setActiveChatId('');
-    setOpenMenuChatId(null);
+    setOpenMenuChatId('');
   };
 
   const handleSelectChat = (chat: DashboardSidebarChat) => {
@@ -85,12 +85,12 @@ export const useDashboardWorkspace = (): UseDashboardWorkspaceReturn => {
     setErrorMessage('');
     setIsCopied(false);
     setActiveChatId(chat.id);
-    setOpenMenuChatId(null);
+    setOpenMenuChatId('');
   };
 
   const handleDeleteChat = (chatId: string) => {
     setChatHistory((previousChats) => previousChats.filter((chat) => chat.id !== chatId));
-    setOpenMenuChatId(null);
+    setOpenMenuChatId('');
     if (activeChatId === chatId) {
       handleNewChat();
     }
