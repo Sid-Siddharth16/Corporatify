@@ -1,17 +1,27 @@
 import { useMemo, useState, type ChangeEvent, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { GoogleLogin, type CredentialResponse } from '@react-oauth/google';
+import { jwtDecode } from 'jwt-decode';
 import Input from '../../components/input';
 import { corporatifyLogo } from '../../common/images';
 import { useAppDispatch } from '../../redux/hooks';
-import { loginUser } from './service/authService';
+import { loginUser, loginWithGoogleUser } from './service/authService';
 import { login } from './slice';
-import type { LoginPayload } from './types';
+import type { GoogleAuthProfile, LoginPayload } from './types';
 import './login.scss';
 
 type LoginErrors = {
   email: string;
   password: string;
+};
+
+type GoogleJwtPayload = {
+  email?: string;
+  email_verified?: boolean;
+  name?: string;
+  picture?: string;
+  sub?: string;
 };
 
 /**
@@ -57,6 +67,8 @@ function LoginPage() {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   // Shows loading feedback on submit button to prevent accidental double submissions.
   const [isSubmitting, setIsSubmitting] = useState(false);
+  // Stores Google auth runtime issues for clear inline feedback.
+  const [googleAuthError, setGoogleAuthError] = useState('');
 
   /**
    * Updates string form fields in a generic, reusable way.
@@ -101,6 +113,45 @@ function LoginPage() {
     () => Boolean(formState.email.trim()) && Boolean(formState.password.trim()),
     [formState.email, formState.password],
   );
+
+  /**
+   * Handles Google token callback and logs user into the same Redux/localStorage flow.
+   * @param credentialResponse Credential payload from `GoogleLogin` component.
+   */
+  const handleGoogleSuccess = (credentialResponse: CredentialResponse) => {
+    if (!credentialResponse.credential) {
+      setGoogleAuthError('Google login failed. Missing identity token.');
+      console.error('Google OAuth error: credential missing in success callback.');
+      return;
+    }
+    try {
+      const decodedToken = jwtDecode<GoogleJwtPayload>(credentialResponse.credential);
+      if (!decodedToken.email || !decodedToken.name || !decodedToken.sub) {
+        setGoogleAuthError('Google login failed. Incomplete profile information received.');
+        console.error('Google OAuth error: decoded token missing required profile fields.', decodedToken);
+        return;
+      }
+      if (!decodedToken.email_verified) {
+        setGoogleAuthError('Please verify your Google email before signing in.');
+        console.error('Google OAuth error: email is not verified for decoded profile.', decodedToken.email);
+        return;
+      }
+      const googleProfile: GoogleAuthProfile = {
+        id: decodedToken.sub,
+        email: decodedToken.email,
+        name: decodedToken.name,
+        picture: decodedToken.picture,
+      };
+      const authenticatedUser = loginWithGoogleUser(googleProfile, formState.rememberMe);
+      dispatch(login(authenticatedUser));
+      setGoogleAuthError('');
+      toast.success(`Signed in with Google as ${authenticatedUser.name}.`);
+      navigate('/dashboard', { replace: true });
+    } catch (error) {
+      setGoogleAuthError('Google login failed. Unable to validate identity token.');
+      console.error('Google OAuth error: failed to decode/validate credential.', error);
+    }
+  };
 
   return (
     <main className="login-page">
@@ -181,6 +232,27 @@ function LoginPage() {
           <p className="login-form__switch">
             New to Corporatify? <Link to="/signup">Create account</Link>
           </p>
+          {/* Uses `GoogleLogin` only (no manual GIS initialize) to prevent duplicate initialization calls. */}
+          <div className="login-social">
+            <div className="login-social__google-container">
+              <GoogleLogin
+                onSuccess={handleGoogleSuccess}
+                onError={() => {
+                  setGoogleAuthError('Google login failed. Please try again.');
+                  console.error('Google OAuth error: onError callback fired.');
+                }}
+                theme="outline"
+                shape="rectangular"
+                text="continue_with"
+                size="large"
+              />
+            </div>
+          </div>
+          {googleAuthError ? (
+            <p className="login-form__error-message" role="alert">
+              {googleAuthError}
+            </p>
+          ) : null}
         </article>
 
         <img src={corporatifyLogo} alt="Corporatify Logo" className="login-panel__brand-logo" />

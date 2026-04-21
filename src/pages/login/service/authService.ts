@@ -1,4 +1,4 @@
-import type { AuthUser, LoginPayload, SignupPayload, StoredAuthUser } from '../types';
+import type { AuthUser, GoogleAuthProfile, LoginPayload, SignupPayload, StoredAuthUser } from '../types';
 
 /**
  * Dedicated key for all registered frontend-only auth users.
@@ -141,6 +141,36 @@ export const loginUser = (payload: LoginPayload): AuthUser => {
 
   const publicUser = toPublicUser(matchedUser);
   persistSession(publicUser, payload.rememberMe);
+  return publicUser;
+};
+
+/**
+ * Authenticates users from a verified Google profile and upserts them into local records.
+ * @param profile Verified Google profile from GIS token decode.
+ * @param rememberMe Whether the session should persist after browser restart.
+ * @returns Authenticated public user profile.
+ */
+export const loginWithGoogleUser = (profile: GoogleAuthProfile, rememberMe: boolean): AuthUser => {
+  const existingUsers = readStoredUsers();
+  const normalizedEmail = normalizeEmail(profile.email);
+  const existingUser = existingUsers.find((storedUser) => normalizeEmail(storedUser.email) === normalizedEmail);
+
+  // Upserts Google accounts into local users so they can reuse frontend-only session features.
+  const mergedStoredUser: StoredAuthUser = existingUser
+    ? { ...existingUser, name: profile.name.trim() || existingUser.name, email: normalizedEmail }
+    : {
+        id: profile.id || createUserId(),
+        name: profile.name.trim() || 'Google User',
+        email: normalizedEmail,
+        // Placeholder is stored only because local frontend simulation expects a password field.
+        password: '__google_oauth_account__',
+      };
+
+  const nextUsers = [mergedStoredUser, ...existingUsers.filter((storedUser) => storedUser.id !== mergedStoredUser.id)];
+  writeStoredUsers(nextUsers);
+
+  const publicUser = toPublicUser(mergedStoredUser);
+  persistSession(publicUser, rememberMe);
   return publicUser;
 };
 

@@ -41,3 +41,13 @@ export type AuthState = {
   user: AuthUser | null;
   isAuthenticated: boolean;
 };
+
+/**
+ * Normalized Google profile payload after GIS token verification.
+ */
+export type GoogleAuthProfile = {
+  id: string;
+  email: string;
+  name: string;
+  picture?: string;
+};
